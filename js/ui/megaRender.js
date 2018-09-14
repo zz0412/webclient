@@ -973,7 +973,7 @@
 
                 if (aNode.fav && !folderlink) {
                     var selector = this.viewmode ? '.file-status-icon' : '.grid-status-icon';
-                    aTemplate.querySelector(selector).classList.add('star');
+                    // aTemplate.querySelector(selector).classList.add('star');
                 }
 
                 aTemplate.querySelector('.shared-folder-name').textContent = aProperties.name;

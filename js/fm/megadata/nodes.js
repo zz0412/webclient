@@ -1708,8 +1708,8 @@ MegaData.prototype.favouriteDomUpdate = function(node, favState) {
     var $blockView = $('#' + node.h + '.data-block-view .file-status-icon');
 
     if (favState) {// Add favourite
-        $gridView.addClass('star');
-        $blockView.addClass('star');
+        // $gridView.addClass('star');
+        // $blockView.addClass('star');
     }
     else {// Remove from favourites
         $gridView.removeClass('star');

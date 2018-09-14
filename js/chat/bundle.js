@@ -8531,7 +8531,7 @@ React.makeElement = React['createElement'];
 	                    React.makeElement(
 	                        "td",
 	                        null,
-	                        React.makeElement("span", { className: "grid-status-icon" + (node.fav ? " star" : "") })
+	                        // React.makeElement("span", { className: "grid-status-icon" + (node.fav ? " star" : "") })
 	                    ),
 	                    React.makeElement(
 	                        "td",

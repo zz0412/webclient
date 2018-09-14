@@ -224,7 +224,9 @@ function topPopupAlign(button, popup, topPos) {
 
 
 function init_page() {
+    // TODO 判断加载的初始页面
     page = page || (u_type ? 'fm' : 'start');
+    // page = 'fm';
 
     var mobilePageParsed = false;
 

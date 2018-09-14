@@ -114,7 +114,7 @@ MegaData.prototype.menuItems = function menuItems() {
     nodes = nodes.concat(rrnodes);
 
     var checkMegaSync = function _checkMegaSync(preparedItems) {
-        $('.dropdown-item.download-item').addClass('contains-submenu');
+        // $('.dropdown-item.download-item').addClass('contains-submenu');
         $('.dropdown-item.download-item').removeClass('msync-found');
         megasync.isInstalled(function (err, is) {
             if (!err || is) {

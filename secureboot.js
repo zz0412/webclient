@@ -1,5 +1,15 @@
+// // Disables the cryptographic hash verification logic.
+// localStorage.dd = 1;
+// // Enables vanilla console logging.
+// localStorage.d = 1;
+// // Enables full console logging via MegaLogger.
+// localStorage.minLogLevel = 0;
+// // Allows you to disable the context menu in the FM for element inspection.
+// localStorage.contextmenu = 1;
+
+
 // Release version information is replaced by the build scripts
-var buildVersion = { website: '', chrome: '', firefox: '', commit: '', timestamp: '', dateTime: '' };
+var buildVersion = {website: '', chrome: '', firefox: '', commit: '', timestamp: '', dateTime: ''};
 
 var m;
 var b_u = 0;
@@ -12,8 +22,8 @@ var cookiesDisabled = false;
 var storageQuotaError = false;
 var lastactive = new Date().getTime();
 var URL = window.URL || window.webkitURL;
-var seqno = Math.ceil(Math.random()*1000000000);
-var staticpath = 'https://eu.static.mega.co.nz/3/';
+var seqno = Math.ceil(Math.random() * 1000000000);
+var staticpath = 'https://eu.static.mega.co.nz/3/';  // TODO staticpath配置地址
 var ua = window.navigator.userAgent.toLowerCase();
 var storage_version = '1'; // clear localStorage when version doesn't match
 var l, d = false;
@@ -41,10 +51,10 @@ var is_iframed = is_embed || is_drop;
 var is_karma = !is_iframed && /^localhost:987[6-9]/.test(window.top.location.host);
 var is_chrome_firefox = document.location.protocol === 'chrome:' &&
     document.location.host === 'mega' || document.location.protocol === 'mega:';
-var location_sub = document.location.href.substr(0, 16);
-var is_chrome_web_ext = location_sub === 'chrome-extension' || location_sub === 'ms-browser-exten';
-var is_firefox_web_ext = location_sub === 'moz-extension://';
-var is_extension = is_chrome_firefox || is_electron || is_chrome_web_ext || is_firefox_web_ext;
+// var location_sub = document.location.href.substr(0, 16);
+var is_chrome_web_ext = false;// location_sub === 'chrome-extension' || location_sub === 'ms-browser-exten';  // TODO chrome扩展
+var is_firefox_web_ext = false;//  location_sub === 'moz-extension://'; // TODO firefox 扩展
+var is_extension = is_chrome_firefox || is_electron; // || is_chrome_web_ext || is_firefox_web_ext;
 var is_mobile = m = isMobile();
 var is_ios = is_mobile && (ua.indexOf('iphone') > -1 || ua.indexOf('ipad') > -1 || ua.indexOf('ipod') > -1);
 var is_microsoft = /msie|edge|trident/i.test(ua);
@@ -84,12 +94,12 @@ function getSitePath() {
         return '/' + hash;
     }
 
-    if (location.host === 'webcache.googleusercontent.com') {
-        var m = String(location.href).match(/mega\.nz\/([\w-]+)/);
-        if (m) {
-            return '/' + m[1];
-        }
-    }
+    // if (location.host === 'webcache.googleusercontent.com') {
+    //     var m = String(location.href).match(/mega\.nz\/([\w-]+)/);
+    //     if (m) {
+    //         return '/' + m[1];
+    //     }
+    // }
 
     return document.location.pathname;
 }
@@ -134,13 +144,13 @@ function mURIDecode(path) {
 }
 
 function clickURLs() {
-    $('a.clickurl').rebind('click', function() {
+    $('a.clickurl').rebind('click', function () {
         var $this = $(this);
         var url = $this.attr('href') || $this.data('fxhref');
         if (url) {
             if (window.loadingDialog && $this.hasClass('pages-nav')) {
                 loadingDialog.quiet = true;
-                onIdle(function() {
+                onIdle(function () {
                     loadingDialog.quiet = false;
                 });
             }
@@ -150,29 +160,31 @@ function clickURLs() {
     });
 }
 
-function geoStaticpath(eu)
-{
-    if (!eu) {
-        try {
-            if (!sessionStorage.skipcdn) {
-                var cc_eu = 'FR DE NL ES PT DK CH IT UK GB NO SE FI PL CZ SK AT GR RO HU IE TR VA MC SM LI AD JE GG UA BG LT LV EE AX IS MA DZ LY TN EG RU BY HR SI AL ME RS KO EU FO CY IL LB SY SA JO IQ BA CV PS EH GI GL IM LU MK SJ BF BI BJ BW CF CG CM DJ ER ET GA GH GM GN GN GW KE KM LR LS MG ZA AE ML MR MT MU MV MW MZ NA NE QA RW SD SS SL SZ TD TG TZ UG YE ZA ZM ZR ZW';
-                var cc_na = 'US CA MX AG BS BB BZ CR CO CU DO GD GT GY HT HN JM NI PA KN LC VC SR TT VE IS GL AI BL VG PR VI VE CO EC CL BR BO PY UY AR GY SR PE GF FK';
-                var cc_nz = 'NZ AU FJ NC';
-				var cc_sg = 'HK TH VN ID MY BD NP MM BT IN PH LK BN';
-                var cm = String(document.cookie).match(/geoip\s*\=\s*([A-Z]{2})/);
-				if (cm && cm[1] && cc_sg.indexOf(cm[1]) > -1)
-                    return 'https://sg.static.mega.co.nz/3/';
-                else if (cm && cm[1] && cc_na.indexOf(cm[1]) > -1)
-                    return 'https://na.static.mega.co.nz/3/';
-                else if (cm && cm[1] && cc_nz.indexOf(cm[1]) > -1)
-                    return 'https://nz.static.mega.co.nz/3/';
-                else if (cm && cm[1] && cc_eu.indexOf(cm[1]) == -1)
-                    return 'https://g.cdn1.mega.co.nz/3/';
-            }
-        } catch(e) {
-            setTimeout(function() { throw e; }, 2100);
-        }
-    }
+// TODO 获取static地址
+function geoStaticpath(eu) {
+    // if (!eu) {
+    //     try {
+    //         if (!sessionStorage.skipcdn) {
+    //             var cc_eu = 'FR DE NL ES PT DK CH IT UK GB NO SE FI PL CZ SK AT GR RO HU IE TR VA MC SM LI AD JE GG UA BG LT LV EE AX IS MA DZ LY TN EG RU BY HR SI AL ME RS KO EU FO CY IL LB SY SA JO IQ BA CV PS EH GI GL IM LU MK SJ BF BI BJ BW CF CG CM DJ ER ET GA GH GM GN GN GW KE KM LR LS MG ZA AE ML MR MT MU MV MW MZ NA NE QA RW SD SS SL SZ TD TG TZ UG YE ZA ZM ZR ZW';
+    //             var cc_na = 'US CA MX AG BS BB BZ CR CO CU DO GD GT GY HT HN JM NI PA KN LC VC SR TT VE IS GL AI BL VG PR VI VE CO EC CL BR BO PY UY AR GY SR PE GF FK';
+    //             var cc_nz = 'NZ AU FJ NC';
+    //             var cc_sg = 'HK TH VN ID MY BD NP MM BT IN PH LK BN';
+    //             var cm = String(document.cookie).match(/geoip\s*\=\s*([A-Z]{2})/);
+    //             if (cm && cm[1] && cc_sg.indexOf(cm[1]) > -1)
+    //                 return 'https://sg.static.mega.co.nz/3/';
+    //             else if (cm && cm[1] && cc_na.indexOf(cm[1]) > -1)
+    //                 return 'https://na.static.mega.co.nz/3/';
+    //             else if (cm && cm[1] && cc_nz.indexOf(cm[1]) > -1)
+    //                 return 'https://nz.static.mega.co.nz/3/';
+    //             else if (cm && cm[1] && cc_eu.indexOf(cm[1]) == -1)
+    //                 return 'https://g.cdn1.mega.co.nz/3/';
+    //         }
+    //     } catch (e) {
+    //         setTimeout(function () {
+    //             throw e;
+    //         }, 2100);
+    //     }
+    // }
     return 'https://eu.static.mega.co.nz/3/';
 }
 
@@ -185,11 +197,11 @@ if (is_chrome_firefox) {
     Cu['import']("resource://gre/modules/Services.jsm");
 
     ['userAgent', 'appName', 'appVersion', 'platform', 'oscpu']
-        .forEach(function(k) {
+        .forEach(function (k) {
             var pref = 'general.' + k.toLowerCase() + '.override';
 
             if (Services.prefs.prefHasUserValue(pref)
-                    && Services.prefs.getPrefType(pref) === 32) {
+                && Services.prefs.getPrefType(pref) === 32) {
 
                 try {
                     var value = Services.prefs.getCharPref(pref);
@@ -198,18 +210,19 @@ if (is_chrome_firefox) {
                     Object.defineProperty(navigator, k, {
                         enumerable: true,
                         value: Cc["@mozilla.org/network/protocol;1?name=http"]
-                                    .getService(Ci.nsIHttpProtocolHandler)[k]
+                            .getService(Ci.nsIHttpProtocolHandler)[k]
                     });
                     Services.prefs.setCharPref(pref, value);
                 }
-                catch (e) {}
+                catch (e) {
+                }
             }
         });
 
     ua = navigator.userAgent.toLowerCase();
 }
 else if (ua.indexOf('chrome') !== -1 && ua.indexOf('mobile') === -1
-        && parseInt(String(navigator.appVersion).split('Chrome/').pop()) < 22) {
+    && parseInt(String(navigator.appVersion).split('Chrome/').pop()) < 22) {
     b_u = 1;
 }
 else if (ua.indexOf('firefox') > -1 && typeof DataView === 'undefined') {
@@ -224,19 +237,19 @@ if (!myURL) {
 }
 
 if (!String.prototype.trim) {
-    String.prototype.trim = function() {
+    String.prototype.trim = function () {
         return this.replace(/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g, '');
     };
 }
 if (!String.prototype.localeCompare) {
-    String.prototype.localeCompare = function(to) {
+    String.prototype.localeCompare = function (to) {
         var s1 = this.toLowerCase();
         var s2 = String(to).toLowerCase();
         return s1 > s2 ? 1 : (s1 < s2 ? -1 : 0);
     };
 }
 if (!String.trim) {
-    String.trim = function(s) {
+    String.trim = function (s) {
         return String(s).trim();
     };
 }
@@ -247,12 +260,12 @@ if (!Date.now) {
 }
 
 try {
-    // Browser compatibility
+    // Browser compatibility   TODO 浏览器兼容性
     // Fx 4.0   Chrome 5   MSIE 9   Opera 11.60   Safari 5.1
-    Object.defineProperty(this, 'megaChatIsDisabled', (function() {
+    Object.defineProperty(this, 'megaChatIsDisabled', (function () {
         var status;
         return {
-            set: function(val) {
+            set: function (val) {
                 status = val;
                 if (status) {
                     $(document.body).addClass("megaChatDisabled");
@@ -261,7 +274,7 @@ try {
                     $(document.body).removeClass("megaChatDisabled");
                 }
             },
-            get: function() {
+            get: function () {
                 return status || localStorage.testChatDisabled
                     || (localStorage.chatDisabled !== undefined
                         && localStorage.chatDisabled !== "0");
@@ -271,10 +284,8 @@ try {
 
     // Check whether Mega Chat is enabled *and* initialized
     Object.defineProperty(this, 'megaChatIsReady', {
-        get: function() {
-            return !megaChatIsDisabled
-                && typeof megaChat !== 'undefined'
-                && megaChat.is_initialized;
+        get: function () {
+            return false;
         }
     });
 }
@@ -402,27 +413,22 @@ if (!b_u) try
     var contenterror = 0;
     var nocontentcheck = false;
 
-    if (!is_extension && (window.dd || (location.host !== 'mega.nz' && location.host !== 'webcache.googleusercontent.com'))) {
+    nocontentcheck = true;
+    var devhost = window.location.host;
+    // handle subdirs
+    // Disable pathSuffixes, because they are no longer supported: the webclient will now only work from root
+    var pathSuffix = '';
+    pathSuffix = pathSuffix.split("/").slice(0, -1).join("/");
+    // set the staticpath for debug mode
+    staticpath = window.location.protocol + "//" + devhost + pathSuffix + "/";
+    if (window.d) {
+        console.debug('StaticPath set to "' + staticpath + '"');megaChatIsReady
+    }
 
-        nocontentcheck = true;
-        var devhost = window.location.host;
-        // handle subdirs
-        // Disable pathSuffixes, because they are no longer supported: the webclient will now only work from root
-        var pathSuffix = '';
-        pathSuffix = pathSuffix.split("/").slice(0, -1).join("/");
-        // set the staticpath for debug mode
-        staticpath = window.location.protocol + "//" + devhost + pathSuffix + "/";
-        if (window.d) {
-            console.debug('StaticPath set to "' + staticpath + '"');
-        }
-    }
-    else {
-        staticpath = localStorage.staticpath;
-    }
-    staticpath = staticpath || geoStaticpath();
-    apipath = localStorage.apipath || 'https://g.api.mega.co.nz/';
+    staticpath = staticpath || geoStaticpath();  // TODO staticpath 配置地址
+    apipath = localStorage.apipath || 'https://g.api.mega.co.nz/';  // TODO　apipath 配置地址
 }
-catch(e) {
+catch (e) {
     if (!m || !cookiesDisabled) {
         var extraInfo = '';
         if (storageQuotaError) {
@@ -437,7 +443,7 @@ catch(e) {
             "Sorry, we were unable to initialize the browser's local storage, " +
             "either you're using an outdated/misconfigured browser or " +
             "it's something from our side.\n" +
-            "\n"+
+            "\n" +
             "If you think it's our fault, please report the issue back to us.\n" +
             "\n" +
             "Reason: " + (e.message || e) +
@@ -447,7 +453,7 @@ catch(e) {
         b_u = 1;
     }
 }
-
+// TODO ？？ mega
 var mega = {
     ui: {},
     flags: 0,
@@ -462,7 +468,7 @@ var mega = {
         0, 'Torch', 'Epic'
     ],
     whoami: 'We make secure cloud storage simple. Create an account and get 50 GB ' +
-            'free on MEGA\'s end-to-end encrypted cloud collaboration platform today!',
+    'free on MEGA\'s end-to-end encrypted cloud collaboration platform today!',
 
     maxWorkers: Math.min(navigator.hardwareConcurrency || 4, 12),
 
@@ -470,7 +476,7 @@ var mega = {
     apiMiscFlags: {},
 
     /** Get browser brancd internal ID */
-    getBrowserBrandID: function() {
+    getBrowserBrandID: function () {
         if (Object(window.chrome).torch) {
             return 1;
         }
@@ -494,10 +500,10 @@ var mega = {
     },
 
     /** Load performance report */
-    initLoadReport: function() {
+    initLoadReport: function () {
         var r = {startTime: Date.now(), stepTimeStamp: Date.now(), EAGAINs: 0, e500s: 0, errs: 0, mode: 1};
 
-        r.aliveTimer = setInterval(function() {
+        r.aliveTimer = setInterval(function () {
             var now = Date.now();
             if ((now - r.aliveTimeStamp) > 20000) {
                 // Either the browser froze for too long or the computer
@@ -509,7 +515,7 @@ var mega = {
             else if (r.scSent && now - r.scSent > 6e4 && (scqhead > scqtail * 2)) {
                 api_req({a: 'log', e: 99679}); // sc processing took too long
 
-                msgDialog('warninga:!^' + l[17704] + '!' + l[17705], l[882], l[17706], 0, function(yes) {
+                msgDialog('warninga:!^' + l[17704] + '!' + l[17705], l[882], l[17706], 0, function (yes) {
                     if (yes) {
                         fm_forcerefresh();
                     }
@@ -522,8 +528,11 @@ var mega = {
         this.flags |= window.MEGAFLAG_LOADINGCLOUD;
     },
 
-    /** Parameters to append to API requests */
-    urlParams: function() {
+    /**
+     * Parameters to append to API requests
+     *  TODO 附加到API请求的参数
+     * */
+    urlParams: function () {
         if (!this._urlParams) {
             var params = '&domain=meganz'; // domain origin
 
@@ -552,7 +561,7 @@ var mega = {
      * Fetches information from the API about which features are enabled
      * @param {Function|undefined} completeCallback The function to run when the function has completed
      */
-    getApiMiscFlags: function(completeCallback) {
+    getApiMiscFlags: function (completeCallback) {
 
         'use strict';
 
@@ -562,8 +571,8 @@ var mega = {
         }
         else {
             // Make Get Miscellaneous Flags (gmf) API request
-            api_req({ a: 'gmf' }, {
-                callback: function(result) {
+            api_req({a: 'gmf'}, {
+                callback: function (result) {
                     if (result) {
 
                         // Cache flags object
@@ -581,9 +590,9 @@ var mega = {
 };
 
 var hashLogic = false;
-if (localStorage.hashLogic) hashLogic=true;
+if (localStorage.hashLogic) hashLogic = true;
 if (localStorage.testMobileSite) is_mobile = m = true;
-if (typeof history == 'undefined') hashLogic=true;
+if (typeof history == 'undefined') hashLogic = true;
 
 var bootstaticpath = staticpath;
 var urlrootfile = '';
@@ -593,59 +602,57 @@ if (is_bot) {
     nocontentcheck = true;
 }
 
-if (!b_u && is_extension)
-{
-    hashLogic = true;
-    nocontentcheck=true;
-
-    if (is_chrome_firefox)
-    {
-        bootstaticpath = 'chrome://mega/content/';
-        urlrootfile = 'secure.html';
-        if (d > 1) {
-            staticpath = bootstaticpath;
-        }
-        else {
-            staticpath = 'https://eu.static.mega.co.nz/3/';
-        }
-        try {
-            loadSubScript(bootstaticpath + 'fileapi.js');
-        } catch(e) {
-            b_u = 1;
-            Cu.reportError(e);
-            alert('Unable to initialize core functionality:\n\n' + e + '\n\n' + mozBrowserID);
-        }
-        if (location.protocol === 'mega:') {
-            try {
-                var url = mObjectURL([""]);
-                myURL.revokeObjectURL(url);
-            }
-            catch (e) {
-                console.error('mObjectURL failed, is this TOR?', e);
-                document.location = bootstaticpath + urlrootfile + location.hash;
-            }
-        }
-    }
-    else if (is_electron) {
-        urlrootfile = 'index.html';
-        bootstaticpath = location.href.replace(urlrootfile, '');
-    }
-    else /* Google Chrome */
-    {
-        tmp = 'mega';
-        if (typeof chrome.runtime.getManifest === 'function' && !Object(chrome.runtime.getManifest()).update_url) {
-            tmp = localStorage.chromextdevpath || tmp;
-        }
-        bootstaticpath = chrome.extension.getURL(tmp + '/');
-        urlrootfile = tmp + '/secure.html';
-    }
-
-    Object.defineProperty(window, 'eval', {
-        value : function eval(code) {
-            throw new Error('Unsafe eval is not allowed, code: ' + String(code).replace(/\s+/g,' ').substr(0,60) + '...');
-        }
-    });
-}
+// if (!b_u && is_extension) {
+//     hashLogic = true;
+//     nocontentcheck = true;
+//
+//     if (is_chrome_firefox) {
+//         bootstaticpath = 'chrome://mega/content/';
+//         urlrootfile = 'secure.html';
+//         if (d > 1) {
+//             staticpath = bootstaticpath;
+//         }
+//         else {
+//             staticpath = 'https://eu.static.mega.co.nz/3/';
+//         }
+//         try {
+//             loadSubScript(bootstaticpath + 'fileapi.js');
+//         } catch (e) {
+//             b_u = 1;
+//             Cu.reportError(e);
+//             alert('Unable to initialize core functionality:\n\n' + e + '\n\n' + mozBrowserID);
+//         }
+//         if (location.protocol === 'mega:') {
+//             try {
+//                 var url = mObjectURL([""]);
+//                 myURL.revokeObjectURL(url);
+//             }
+//             catch (e) {
+//                 console.error('mObjectURL failed, is this TOR?', e);
+//                 document.location = bootstaticpath + urlrootfile + location.hash;
+//             }
+//         }
+//     }
+//     else if (is_electron) {
+//         urlrootfile = 'index.html';
+//         bootstaticpath = location.href.replace(urlrootfile, '');
+//     }
+//     else /* Google Chrome */
+//     {
+//         tmp = 'mega';
+//         if (typeof chrome.runtime.getManifest === 'function' && !Object(chrome.runtime.getManifest()).update_url) {
+//             tmp = localStorage.chromextdevpath || tmp;
+//         }
+//         bootstaticpath = chrome.extension.getURL(tmp + '/');
+//         urlrootfile = tmp + '/secure.html';
+//     }
+//
+//     Object.defineProperty(window, 'eval', {
+//         value: function eval(code) {
+//             throw new Error('Unsafe eval is not allowed, code: ' + String(code).replace(/\s+/g, ' ').substr(0, 60) + '...');
+//         }
+//     });
+// }
 
 
 var page;
@@ -670,15 +677,13 @@ else {
         page = document.location.pathname;
     }
     page = getCleanSitePath(page);
-	// put try block around it to allow the page to be rendered in Google cache
-	try
-	{
-		history.replaceState({subpage: page}, "", '/' + page);
-	}
-	catch(e)
-	{
-		console.log('Probably Google Cache?');
-	}
+    // put try block around it to allow the page to be rendered in Google cache
+    try {
+        history.replaceState({subpage: page}, "", '/' + page);
+    }
+    catch (e) {
+        console.log('Probably Google Cache?');
+    }
 }
 
 
@@ -738,7 +743,7 @@ function mCreateElement(aNode, aAttrs, aChildNodes, aTarget, aData) {
 
     if (aAttrs) {
         for (var attr in aAttrs) {
-            aNode.setAttribute( attr, '' + aAttrs[attr]);
+            aNode.setAttribute(attr, '' + aAttrs[attr]);
         }
     }
 
@@ -772,8 +777,8 @@ function mCreateElement(aNode, aAttrs, aChildNodes, aTarget, aData) {
         aData = mObjectURL(aData, aAttrs && aAttrs.type || 'text/plain');
 
         if (!d) {
-            aNode.onload = function() {
-                setTimeout(function() {
+            aNode.onload = function () {
+                setTimeout(function () {
                     URL.revokeObjectURL(aData);
                 }, 2600);
 
@@ -792,12 +797,11 @@ function mCreateElement(aNode, aAttrs, aChildNodes, aTarget, aData) {
     return aNode;
 }
 
-function mObjectURL(data, type)
-{
+function mObjectURL(data, type) {
     var blob;
     try {
-        blob = new Blob( data, { type: type });
-    } catch(e) {
+        blob = new Blob(data, {type: type});
+    } catch (e) {
         if (d) console.error(e);
         if (!window.BlobBuilder) {
             window.BlobBuilder = window.WebKitBlobBuilder || window.MozBlobBuilder || window.MSBlobBuilder;
@@ -812,11 +816,12 @@ function mObjectURL(data, type)
 }
 
 /**
+ * // TODO 事件监听器
  * Events broadcaster
  * @name mBroadcaster
  * @global
  */
-(function(s, o) {
+(function (s, o) {
     'use strict';
     Object.defineProperty(s, 'mBroadcaster', {
         value: o,
@@ -838,7 +843,7 @@ function mObjectURL(data, type)
 
         if (typeof options === 'function') {
             options = {
-                callback : options
+                callback: options
             };
         }
         if (options.hasOwnProperty('handleEvent')) {
@@ -858,7 +863,7 @@ function mObjectURL(data, type)
         var id = makeUUID();
         this._topics[topic][id] = options;
 
-        //if (d) console.log('Adding broadcast listener', topic, id, options);
+        if (d) console.log('Adding broadcast listener', topic, id, options);
 
         return id;
     },
@@ -938,7 +943,7 @@ function mObjectURL(data, type)
         'use strict';
 
         if (this._topics[topic]) {
-            var idr  = [];
+            var idr = [];
             var args = toArray.apply(null, arguments);
             args.shift();
 
@@ -955,7 +960,7 @@ function mObjectURL(data, type)
                 } catch (ex) {
                     if (d) console.error(ex);
 
-                    onIdle(function() {
+                    onIdle(function () {
                         throw ex;
                     });
                 }
@@ -984,8 +989,8 @@ function mObjectURL(data, type)
         'use strict';
 
         this.addListener(topic, {
-            once : true,
-            callback : callback
+            once: true,
+            callback: callback
         });
     },
 
@@ -993,7 +998,7 @@ function mObjectURL(data, type)
         eTag: '$CTE$!_',
 
         initialize: function crossTab_init(cb) {
-            var setup = function(ev) {
+            var setup = function (ev) {
                 var msg = String(ev && ev.key).substr(this.eTag.length);
                 if (d) console.log('crossTab setup-event', msg, ev);
                 if (cb && (!ev || msg === 'pong')) {
@@ -1006,7 +1011,7 @@ function mObjectURL(data, type)
                     this.listen();
                     if (d) {
                         console.log('CROSSTAB COMMUNICATION INITIALIZED AS '
-                            + (this.master ? 'MASTER':'SLAVE'));
+                            + (this.master ? 'MASTER' : 'SLAVE'));
 
                         console.log(String(ua));
                         console.log(buildVersion);
@@ -1033,7 +1038,7 @@ function mObjectURL(data, type)
             // as earlier as possible, e.g. now.
             localStorage.ctInstances = (parseInt(localStorage.ctInstances) || 0) + 1;
 
-            setTimeout(function() {
+            setTimeout(function () {
                 setup();
             }, parseInt(localStorage.ctInstances) === 1 ? 0 : 2000);
         },
@@ -1094,7 +1099,7 @@ function mObjectURL(data, type)
         },
 
         notify: function crossTab_notify(msg, data) {
-            data = { origin: this.ctID, data: data, sid: Math.random()};
+            data = {origin: this.ctID, data: data, sid: Math.random()};
             localStorage.setItem(this.eTag + msg, JSON.stringify(data));
             if (d) console.log('crossTab Notifying', this.eTag + msg, localStorage[this.eTag + msg]);
         },
@@ -1114,8 +1119,8 @@ function mObjectURL(data, type)
         },
 
         clear: function crossTab_clear() {
-            Object.keys(localStorage).forEach(function(key) {
-                if (key.substr(0,this.eTag.length) === this.eTag) {
+            Object.keys(localStorage).forEach(function (key) {
+                if (key.substr(0, this.eTag.length) === this.eTag) {
                     if (d) console.log('crossTab Removing ' + key);
                     delete localStorage[key];
                 }
@@ -1129,7 +1134,7 @@ function mObjectURL(data, type)
                 return;
             }
             var msg = ev.key.substr(this.eTag.length),
-                strg = JSON.parse(ev.newValue ||'""');
+                strg = JSON.parse(ev.newValue || '""');
 
             if (!strg || strg.origin === this.ctID) {
                 if (d) console.log('Ignoring crossTab event', msg, strg);
@@ -1188,6 +1193,7 @@ if (!is_karma) {
 var sh = [];
 
 /**
+ * TODO 检查工作线程中文件的十六进制哈希是否与部署时创建的正确哈希相匹配
  * Check that the hexadecimal hash of the file from the worker thread matches the correct one created at deployment time
  * @param {String} hashFromWorker A hexadecimal string
  * @param {String} fileName The file name with the SHA-256 hash appended at the end
@@ -1210,46 +1216,46 @@ function compareHashes(hashFromWorker, fileName) {
     }
 }
 
-function init_storage ( storage ) {
+function init_storage(storage) {
     var v = storage.v || 0,
         d = storage.d,
         dd = storage.dd,
         sp = storage.staticpath;
 
     // Graceful storage version upgrade
-    if ( v == 0 ) {
+    if (v == 0) {
         // array of limbs -> mpi-encoded number
-        function b2mpi (b) {
+        function b2mpi(b) {
             var bs = 28, bm = (1 << bs) - 1, bn = 1, bc = 0, r = [0], rb = 1, rn = 0;
             var bits = b.length * bs;
-            var n, rr='';
+            var n, rr = '';
 
-            for ( n = 0; n < bits; n++ ) {
-                if ( b[bc] & bn ) r[rn] |= rb;
-                if ( (rb <<= 1) > 255 ) rb = 1, r[++rn] = 0;
-                if ( (bn <<= 1) > bm ) bn = 1, bc++;
+            for (n = 0; n < bits; n++) {
+                if (b[bc] & bn) r[rn] |= rb;
+                if ((rb <<= 1) > 255) rb = 1, r[++rn] = 0;
+                if ((bn <<= 1) > bm) bn = 1, bc++;
             }
 
-            while ( rn && r[rn] == 0 ) rn--;
+            while (rn && r[rn] == 0) rn--;
 
             bn = 256;
-            for ( bits = 8; bits > 0; bits-- ) if ( r[rn] & (bn >>= 1) ) break;
+            for (bits = 8; bits > 0; bits--) if (r[rn] & (bn >>= 1)) break;
             bits += rn * 8;
 
-            rr += String.fromCharCode(bits/256)+String.fromCharCode(bits%256);
-            if ( bits ) for ( n = rn; n >= 0; n-- ) rr += String.fromCharCode(r[n]);
+            rr += String.fromCharCode(bits / 256) + String.fromCharCode(bits % 256);
+            if (bits) for (n = rn; n >= 0; n--) rr += String.fromCharCode(r[n]);
             return rr;
         }
 
-        if ( storage.privk && storage.privk.substr(0, 1) == "[") { /* is json serialized array which need to be migrated */
+        if (storage.privk && storage.privk.substr(0, 1) == "[") { /* is json serialized array which need to be migrated */
             // Upgrade key format
             try {
                 var privk = JSON.parse(storage.privk), str = '';
-                for ( var i = 0; i < privk.length; i++ ) str += b2mpi( privk[i] );
-                storage.privk = btoa(str).replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'');
+                for (var i = 0; i < privk.length; i++) str += b2mpi(privk[i]);
+                storage.privk = btoa(str).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
                 v++;
             }
-            catch ( e ) {
+            catch (e) {
                 console.error("Could not migrate storage - priv key could not be converted to the new format: ", e);
             }
         }
@@ -1264,12 +1270,12 @@ function init_storage ( storage ) {
     // ... and so on
 
     // Or upgrade hard when graceful method isn't provided
-    if ( v != storage_version ) {
+    if (v != storage_version) {
         storage.clear();
         storage.v = storage_version;
-        if ( d ) storage.d = d;
-        if ( dd ) storage.dd = dd;
-        if ( sp ) storage.staticpath = sp;
+        if (d) storage.d = d;
+        if (dd) storage.dd = dd;
+        if (sp) storage.staticpath = sp;
     }
 
     return storage;
@@ -1288,10 +1294,10 @@ else {
 
 function siteLoadError(error, filename) {
     'use strict';
-    var message = ['MEGA failed to load because of '];
-    if (location.host !== 'mega.nz') {
-        message[0] += '..';
-    }
+    var message = ['Failed to load because of '];
+    // if (location.host !== 'mega.nz') {
+    //     message[0] += '..';
+    // }
     if (error === 1) {
         message.push('The file "' + filename + '" is corrupt.');
     }
@@ -1303,10 +1309,9 @@ function siteLoadError(error, filename) {
     }
     message.push('Please click OK to refresh and try again.');
     message.push("If the problem persists, please try disabling all third-party browser extensions,"
-        + " update your browser and MEGA browser extension to the latest version.If that does not help, "
-        + "contact support@mega.nz");
+        + " update your browser to the latest version.If that does not help");
     message.push('BrowserID: ' + (typeof mozBrowserID !== 'undefined' ? mozBrowserID : ua));
-    message.push('Static server: ' + staticpath);
+    // message.push('Static server: ' + staticpath);
     contenterror = 1;
     // showing a confirm dialog containing the message, and if 'OK' pressed it will reload
     if (confirm(message.join("\n\n")) === true) {
@@ -1315,53 +1320,52 @@ function siteLoadError(error, filename) {
 }
 
 
-if (m || (typeof localStorage !== 'undefined' && localStorage.mobile))
-{
-    var tag=document.createElement('meta');
-    tag.name = "viewport";
-    tag.content = "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0";
-    document.getElementsByTagName('head')[0].appendChild(tag);
-    var tag=document.createElement('meta');
-    tag.name = "apple-mobile-web-app-capable";
-    tag.content = "yes";
-    document.getElementsByTagName('head')[0].appendChild(tag);
-    var tag=document.createElement('meta');
-    tag.name = "apple-mobile-web-app-status-bar-style";
-    tag.content = "black";
-    document.getElementsByTagName('head')[0].appendChild(tag);
-    var tag=document.createElement('link');
-    tag.rel = "apple-touch-icon-precomposed";
-    tag.sizes = "144x144";
-    tag.href = staticpath + "images/mobile/App_ipad_144x144.png";
-    document.getElementsByTagName('head')[0].appendChild(tag);
-    var tag=document.createElement('link');
-    tag.rel = "apple-touch-icon-precomposed";
-    tag.sizes = "114x114";
-    tag.href = staticpath + "images/mobile/App_iphone_114x114.png";
-    document.getElementsByTagName('head')[0].appendChild(tag);
-    var tag=document.createElement('link');
-    tag.rel = "apple-touch-icon-precomposed";
-    tag.sizes = "72x72";
-    tag.href = staticpath + "images/mobile/App_ipad_72X72.png";
-    document.getElementsByTagName('head')[0].appendChild(tag);
-    var tag=document.createElement('link');
-    tag.rel = "apple-touch-icon-precomposed";
-    tag.href = staticpath + "images/mobile/App_iphone_57X57.png"
-    document.getElementsByTagName('head')[0].appendChild(tag);
-    var tag=document.createElement('link');
-    tag.rel = "shortcut icon";
-    tag.type = "image/vnd.microsoft.icon";
-    tag.href = "https://mega.nz/favicon.ico";
-    document.getElementsByTagName('head')[0].appendChild(tag);
-    m=true;
-}
+// if (m || (typeof localStorage !== 'undefined' && localStorage.mobile)) {
+//     var tag = document.createElement('meta');
+//     tag.name = "viewport";
+//     tag.content = "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0";
+//     document.getElementsByTagName('head')[0].appendChild(tag);
+//     var tag = document.createElement('meta');
+//     tag.name = "apple-mobile-web-app-capable";
+//     tag.content = "yes";
+//     document.getElementsByTagName('head')[0].appendChild(tag);
+//     var tag = document.createElement('meta');
+//     tag.name = "apple-mobile-web-app-status-bar-style";
+//     tag.content = "black";
+//     document.getElementsByTagName('head')[0].appendChild(tag);
+//     var tag = document.createElement('link');
+//     tag.rel = "apple-touch-icon-precomposed";
+//     tag.sizes = "144x144";
+//     tag.href = staticpath + "images/mobile/App_ipad_144x144.png";
+//     document.getElementsByTagName('head')[0].appendChild(tag);
+//     var tag = document.createElement('link');
+//     tag.rel = "apple-touch-icon-precomposed";
+//     tag.sizes = "114x114";
+//     tag.href = staticpath + "images/mobile/App_iphone_114x114.png";
+//     document.getElementsByTagName('head')[0].appendChild(tag);
+//     var tag = document.createElement('link');
+//     tag.rel = "apple-touch-icon-precomposed";
+//     tag.sizes = "72x72";
+//     tag.href = staticpath + "images/mobile/App_ipad_72X72.png";
+//     document.getElementsByTagName('head')[0].appendChild(tag);
+//     var tag = document.createElement('link');
+//     tag.rel = "apple-touch-icon-precomposed";
+//     tag.href = staticpath + "images/mobile/App_iphone_57X57.png"
+//     document.getElementsByTagName('head')[0].appendChild(tag);
+//     var tag = document.createElement('link');
+//     tag.rel = "shortcut icon";
+//     tag.type = "image/vnd.microsoft.icon";
+//     tag.href = "https://mega.nz/favicon.ico";
+//     document.getElementsByTagName('head')[0].appendChild(tag);
+//     m = true;
+// }
 
 if (is_ios) {
-    tmp = document.querySelector('meta[name="apple-itunes-app"]');
-    if (tmp) {
-        tmp.setAttribute('content',
-            'app-id=706857885, app-argument=mega://#' + page);
-    }
+    // tmp = document.querySelector('meta[name="apple-itunes-app"]');
+    // if (tmp) {
+    //     tmp.setAttribute('content',
+    //         'app-id=706857885, app-argument=mega://#' + page);
+    // }
 
     // http://whatsmyuseragent.com/Devices/iPhone-User-Agent-Strings
     // http://www.enterpriseios.com/wiki/Complete_List_of_iOS_User_Agent_Strings
@@ -1382,7 +1386,7 @@ if (is_ios) {
 
     if (m) {
         // Prevent Safari's copy&paste bug..
-        window.onhashchange = function() {
+        window.onhashchange = function () {
             location.reload();
         };
     }
@@ -1393,139 +1397,147 @@ if (is_ios) {
  * app if any cancel, verify, fm/ipc, newsignup, recover or account links are clicked in the app
  * because the new mobile site is not designed for those yet.
  */
-if (m && (page.substr(0, 6) === 'verify' || page.substr(0, 6) === 'fm/ipc' || page.substr(0, 9) === 'newsignup' ||
-    page.substr(0, 7) === 'account' || page.substr(0, 4) === 'blog' ||
-    (is_old_windows_phone && page.substr(0, 7) === 'confirm'))) {
-
-    var app;
-    var mobileblog;
-    var android;
-    var intent;
-    var ios9;
-    var link = document.createElement('link');
-
-    link.setAttribute('rel', 'stylesheet');
-    link.type = 'text/css';
-    link.href = staticpath + 'css/mobile-app-old.css';
-    document.head.appendChild(link);
-
-    // AMO: Markup should not be passed to `innerHTML` dynamically. -- This isnt reached for the extension, anyway
-    // jscs:disable
-    document.body.innerHTML = '<div class="bottom-page scroll-block"><div class="main-content-block">'
-                            + '<div class="free-green-tip"></div><div class="main-centered-bl">'
-                            + '<div class="main-logo"></div><div class="main-head-txt" id="m_title"></div>'
-                            + '<div class="main-head-txt" id="m_desc"></div><br /><br />'
-                            + '<a href="" class="main-button" id="m_appbtn"></a><div class="main-social hidden">'
-                            + '<a href="https://www.facebook.com/MEGAprivacy" class="main-social-icon facebook"></a>'
-                            + '<a href="https://www.twitter.com/MEGAprivacy" class="main-social-icon twitter"></a>'
-                            + '<div class="clear"></div></div></div> </div><div class="scrolling-content">'
-                            + '<div class="mid-logo"></div><div class="mid-gray-block">MEGA provides free cloud '
-                            + 'storage with convenient and powerful always-on privacy</div>'
-                            + '<div class="scrolling-block-icon encription"></div><div class="scrolling-block-header">'
-                            + 'End-to-end encryption</div><div class="scrolling-block-txt">Unlike other cloud storage '
-                            + 'providers, your data is encrypted & decrypted during transfer by your client devices '
-                            + 'only and never by us.</div><div class="scrolling-block-icon access"></div>'
-                            + '<div class="scrolling-block-header">Secure Global Access</div>'
-                            + '<div class="scrolling-block-txt">Your data is accessible any time, from any device, '
-                            + 'anywhere. Only you control the keys to your files.</div>'
-                            + '<div class="scrolling-block-icon colaboration"></div>'
-                            + '<div class="scrolling-block-header">Secure Collaboration</div>'
-                            + '<div class="scrolling-block-txt">Share folders with your contacts and see their '
-                            + 'updates in real time. Online collaboration has never been more private and secure.'
-                            + '</div><div class="bottom-menu full-version"><div class="copyright-txt">Mega Limited '
-                            + new Date().getFullYear() + '</div><div class="language-block"></div><div class="clear">'
-                            + '</div><iframe src="" width="1" height="1" frameborder="0" style="width:1px; '
-                            + 'height:1px; border:none;" id="m_iframe"></iframe></div></div></div>';
-
-    if (page.substr(0, 4) === 'blog') {
-        mobileblog = 1;
-    }
-    if (ua.indexOf('windows phone') > -1) {
-        app = 'zune://navigate/?phoneappID=1b70a4ef-8b9c-4058-adca-3b9ac8cc194a';
-        document.body.className = 'wp full-mode supported';
-    }
-    else if (ua.indexOf('android') > -1) {
-        app = 'https://play.google.com/store/apps/details?id=mega.privacy.android.app&referrer=meganzsb';
-        document.body.className = 'android full-mode supported';
-        android = 1;
-        var ver = ua.match(/android (\d+)\.(\d+)/);
-        if (ver) {
-            var rev = ver.pop();
-            ver = ver.pop();
-            // Check for Android 2.3+
-            if (ver > 2 || (ver === 2 && rev > 3)) {
-                intent = 'intent://#' + page + '/#Intent;scheme=mega;package=mega.privacy.android.app;end';
-            }
-        }
-        if (intent && !mobileblog) {
-            document.location = intent;
-        }
-    }
-    else if (ua.indexOf('bb10') > -1) {
-        app = 'http://appworld.blackberry.com/webstore/content/46810890/';
-        document.body.className = 'blackberry full-mode supported';
-    }
-    else if (is_ios) {
-        app = 'https://itunes.apple.com/app/mega/id706857885';
-        document.body.className = 'ios full-mode supported';
-    }
-    else {
-        document.body.className = 'another-os full-mode unsupported';
-    }
-    document.getElementById('m_title').innerHTML = 'This link should be opened in the MEGA app.';
-
-    if (app) {
-        document.getElementById('m_appbtn').href = app;
-        document.getElementById('m_desc').innerHTML = 'Otherwise, you can also open the link on a '
-                                                    + 'desktop/laptop browser, or download the MEGA app.';
-    }
-    else {
-        document.getElementById('m_desc').innerHTML = 'Otherwise you can also open the link on a '
-                                                    + 'desktop/laptop browser.';
-    }
-
-    if (mobileblog) {
-        document.body.innerHTML = '';
-        mCreateElement('script', {type: 'text/javascript'}, 'head')
-            .src = ((location.host === 'mega.nz') ? '/blog.js' : 'html/js/blog.js');
-    }
-    else {
-        var prechar = '#';
-        if (ua.indexOf('windows phone') > -1) {
-            prechar = '';
-        }
-        if (ua.indexOf('chrome') > -1) {
-            window.location = 'mega://' + prechar + page;
-        }
-        else if (is_ios > 8) {
-            setTimeout(function() {
-                var text = 'This link should be opened in the MEGA app. '
-                         + 'Click OK if you already have the MEGA app installed';
-                if (confirm(text)) {
-                    document.location = 'mega://#' + page;
-                }
-            }, 1500);
-        }
-        else {
-            document.getElementById('m_iframe').src = 'mega://' + prechar + page;
-        }
-        if (intent) {
-            document.getElementById('m_title').innerHTML
-                += '<br/><em>If you already have the app installed, <a href="' + intent + '">click here!</a></em>';
-        }
-    }
-}
-else if (!b_u) {
+// if (m && (page.substr(0, 6) === 'verify' || page.substr(0, 6) === 'fm/ipc' || page.substr(0, 9) === 'newsignup' ||
+//     page.substr(0, 7) === 'account' || page.substr(0, 4) === 'blog' ||
+//     (is_old_windows_phone && page.substr(0, 7) === 'confirm'))) {
+//
+//     var app;
+//     var mobileblog;
+//     var android;
+//     var intent;
+//     var ios9;
+//     var link = document.createElement('link');
+//
+//     link.setAttribute('rel', 'stylesheet');
+//     link.type = 'text/css';
+//     link.href = staticpath + 'css/mobile-app-old.css';
+//     document.head.appendChild(link);
+//
+//     // AMO: Markup should not be passed to `innerHTML` dynamically. -- This isnt reached for the extension, anyway
+//     // jscs:disable
+//     document.body.innerHTML = '<div class="bottom-page scroll-block"><div class="main-content-block">'
+//         + '<div class="free-green-tip"></div><div class="main-centered-bl">'
+//         + '<div class="main-logo"></div><div class="main-head-txt" id="m_title"></div>'
+//         + '<div class="main-head-txt" id="m_desc"></div><br /><br />'
+//         + '<a href="" class="main-button" id="m_appbtn"></a><div class="main-social hidden">'
+//         + '<a href="https://www.facebook.com/MEGAprivacy" class="main-social-icon facebook"></a>'
+//         + '<a href="https://www.twitter.com/MEGAprivacy" class="main-social-icon twitter"></a>'
+//         + '<div class="clear"></div></div></div> </div><div class="scrolling-content">'
+//         + '<div class="mid-logo"></div><div class="mid-gray-block">MEGA provides free cloud '
+//         + 'storage with convenient and powerful always-on privacy</div>'
+//         + '<div class="scrolling-block-icon encription"></div><div class="scrolling-block-header">'
+//         + 'End-to-end encryption</div><div class="scrolling-block-txt">Unlike other cloud storage '
+//         + 'providers, your data is encrypted & decrypted during transfer by your client devices '
+//         + 'only and never by us.</div><div class="scrolling-block-icon access"></div>'
+//         + '<div class="scrolling-block-header">Secure Global Access</div>'
+//         + '<div class="scrolling-block-txt">Your data is accessible any time, from any device, '
+//         + 'anywhere. Only you control the keys to your files.</div>'
+//         + '<div class="scrolling-block-icon colaboration"></div>'
+//         + '<div class="scrolling-block-header">Secure Collaboration</div>'
+//         + '<div class="scrolling-block-txt">Share folders with your contacts and see their '
+//         + 'updates in real time. Online collaboration has never been more private and secure.'
+//         + '</div><div class="bottom-menu full-version"><div class="copyright-txt">Mega Limited '
+//         + new Date().getFullYear() + '</div><div class="language-block"></div><div class="clear">'
+//         + '</div><iframe src="" width="1" height="1" frameborder="0" style="width:1px; '
+//         + 'height:1px; border:none;" id="m_iframe"></iframe></div></div></div>';
+//
+//     if (page.substr(0, 4) === 'blog') {
+//         mobileblog = 1;
+//     }
+//     if (ua.indexOf('windows phone') > -1) {
+//         app = 'zune://navigate/?phoneappID=1b70a4ef-8b9c-4058-adca-3b9ac8cc194a';
+//         document.body.className = 'wp full-mode supported';
+//     }
+//     else if (ua.indexOf('android') > -1) {
+//         app = 'https://play.google.com/store/apps/details?id=mega.privacy.android.app&referrer=meganzsb';
+//         document.body.className = 'android full-mode supported';
+//         android = 1;
+//         var ver = ua.match(/android (\d+)\.(\d+)/);
+//         if (ver) {
+//             var rev = ver.pop();
+//             ver = ver.pop();
+//             // Check for Android 2.3+
+//             if (ver > 2 || (ver === 2 && rev > 3)) {
+//                 intent = 'intent://#' + page + '/#Intent;scheme=mega;package=mega.privacy.android.app;end';
+//             }
+//         }
+//         if (intent && !mobileblog) {
+//             document.location = intent;
+//         }
+//     }
+//     else if (ua.indexOf('bb10') > -1) {
+//         app = 'http://appworld.blackberry.com/webstore/content/46810890/';
+//         document.body.className = 'blackberry full-mode supported';
+//     }
+//     else if (is_ios) {
+//         app = 'https://itunes.apple.com/app/mega/id706857885';
+//         document.body.className = 'ios full-mode supported';
+//     }
+//     else {
+//         document.body.className = 'another-os full-mode unsupported';
+//     }
+//     document.getElementById('m_title').innerHTML = 'This link should be opened in the MEGA app.';
+//
+//     if (app) {
+//         document.getElementById('m_appbtn').href = app;
+//         document.getElementById('m_desc').innerHTML = 'Otherwise, you can also open the link on a '
+//             + 'desktop/laptop browser, or download the MEGA app.';
+//     }
+//     else {
+//         document.getElementById('m_desc').innerHTML = 'Otherwise you can also open the link on a '
+//             + 'desktop/laptop browser.';
+//     }
+//
+//     if (mobileblog) {
+//         document.body.innerHTML = '';
+//         mCreateElement('script', {type: 'text/javascript'}, 'head')
+//             .src = ((location.host === 'mega.nz') ? '/blog.js' : 'html/js/blog.js');
+//     }
+//     else {
+//         var prechar = '#';
+//         if (ua.indexOf('windows phone') > -1) {
+//             prechar = '';
+//         }
+//         if (ua.indexOf('chrome') > -1) {
+//             window.location = 'mega://' + prechar + page;
+//         }
+//         else if (is_ios > 8) {
+//             setTimeout(function () {
+//                 var text = 'This link should be opened in the MEGA app. '
+//                     + 'Click OK if you already have the MEGA app installed';
+//                 if (confirm(text)) {
+//                     document.location = 'mega://#' + page;
+//                 }
+//             }, 1500);
+//         }
+//         else {
+//             document.getElementById('m_iframe').src = 'mega://' + prechar + page;
+//         }
+//         if (intent) {
+//             document.getElementById('m_title').innerHTML
+//                 += '<br/><em>If you already have the app installed, <a href="' + intent + '">click here!</a></em>';
+//         }
+//     }
+// }
+// else
+    if (!b_u) {
     d = window.d || 0;
     jj = window.jj || 0;
-    var onBetaW = location.hostname === 'beta.mega.nz' || location.hostname.indexOf("developers.") === 0;
+    var onBetaW = false ;// location.hostname === 'beta.mega.nz' || location.hostname.indexOf("developers.") === 0;
 
-    if (typeof console == "undefined") { this.console = { log: function() {}, error: function() {}}}
-    if (d && !console.time) (function(c)
-    {
+    if (typeof console == "undefined") {
+        this.console = {
+            log: function () {
+            }, error: function () {
+            }
+        };
+    }
+    if (d && !console.time) (function (c) {
         var timers = {};
-        c.time = function(n) { timers[n] = new Date().getTime()};
-        c.timeEnd = function(n) {
+        c.time = function (n) {
+            timers[n] = new Date().getTime()
+        };
+        c.timeEnd = function (n) {
             if (timers[n]) {
                 c.log(n + ': ' + (new Date().getTime() - timers[n]) + 'ms');
                 delete timers[n];
@@ -1533,266 +1545,259 @@ else if (!b_u) {
         };
     })(console);
 
-    // Do not report exceptions if this build is older than 10 days
-    var exTimeLeft = ((buildVersion.timestamp + (10 * 86400)) * 1000) > Date.now();
-
-    if (!d && exTimeLeft && (location.host === 'mega.nz' || is_extension || onBetaW))
-    {
-        var __cdumps = [], __cd_t;
-        window.onerror = function __MEGAExceptionHandler(msg, url, ln, cn, errobj)
-        {
-            function mTrim(s)
-            {
-                return String(s)
-                    .replace(/resource:.+->\s/,'')
-                    .replace(/blob:[^:\s]+/, '..')
-                    .replace(/\.\.:\/\/[^:\s]+/, '..')
-                    .replace('chrome://mega/content','..')
-                    .replace(/file:.+extensions/,'..fx')
-                    .replace(/(?: line \d+ > eval)+/g,' >.eval')
-                    .trim();
-            }
-            if (__cdumps.length > 3) return false;
-
-            var dump = {
-                l: ln,
-                f: mTrim(url),
-                m: mTrim(msg)
-                    .replace(/'[a-z]+:\/+[^']+(?:'|$)/gi, function(url) {
-                        url = url.substr(1);
-                        if (url[url.length - 1] === "'") {
-                            url = url.substr(0, url.length - 1);
-                        }
-                        var a = document.createElement('a');
-                        a.href = url;
-                        return "'" + (a.origin !== 'null' && a.origin
-                            || (a.protocol + '//' + a.hostname)) + "...'";
-                    })
-                    .replace(/(Cannot read property )('[\w-]{8}')/, "$1'<h>?'")
-                    .replace(/(Access to '\.\.).*(' from script denied)/, '$1$2')
-                    .replace(/gfs\w+\.userstorage/, 'gfs...userstorage')
-                    .replace(/^Uncaught\W*(?:exception\W*)?/i, ''),
-            }, cc;
-            var sbid = +(''+(document.querySelector('script[src*="secureboot"]')||{}).src).split('=').pop()|0;
-
-            if (~dump.m.indexOf('[[:i]]')) {
-                return false;
-            }
-
-            if ((mega.flags & window.MEGAFLAG_MDBOPEN)
-                    && (dump.m === 'InvalidStateError'
-                        || (dump.m === 'UnknownError'))) {
-                // Prevent InvalidStateError exceptions from indexedDB.open
-                // caused while using Private Browser Mode on Firefox.
-                return false;
-            }
-
-            if (dump.m.indexOf('this.get(...).querySelectorAll') !== -1
-                    || String(errobj && errobj.stack).indexOf('<anonymous>:1:18') !== -1
-                    || dump.m.indexOf('TypeError: this.get is not a function') !== -1) {
-                // ^ this seems a quirk on latest Chrome (~46+) or a bogus extension
-                dump.l = 1;
-                errobj = null;
-                dump.m = 'TypeError: this.get(...).querySelectorAll is not a function';
-            }
-
-            if (~dump.m.indexOf("\n")) {
-                var lns = dump.m.split(/\r?\n/).map(String.trim).filter(String);
-
-                if (lns.length > 6) {
-                    dump.m = [].concat(lns.slice(0,2), "[..!]", lns.slice(-2)).join(" ");
-                }
-            }
-            dump.m = (is_mobile ? '[mobile] ' : is_embed ? '[embed] ' : is_drop ? '[drop] ' : '') + dump.m.replace(/\s+/g, ' ');
-
-            if (!window.jsl_done && !window.u_checked) {
-                // Alert the user if there was an uncaught exception while
-                // loading the site, this should only happen on some fancy
-                // browsers other than what we use during development, and
-                // hopefully they'll report it back to us for troubleshoot
-                if ((url || ln !== 1) && dump.m.indexOf('Error: Blocked') < 0) {
-                    siteLoadError(dump.m, url + ':' + ln);
-                }
-                else {
-                    console.error(dump.m, arguments);
-                }
-                return;
-            }
-
-            if (dump.m.indexOf('Permission denied to access property') > -1) {
-                // Some Firefox extension is injecting some script(s)...
-                console.warn('Your account is only as secure as your computer...');
-                console.warn('Check your installed extensions and which one is injecting scripts on this page...');
-                return false;
-            }
-
-            if (errobj)
-            {
-                if (errobj.udata) dump.d = errobj.udata;
-                if (errobj.stack)
-                {
-                    var maxStackLines = 15;
-                    var omsg = String(msg).trim();
-                    var re = RegExp(
-                        omsg.substr(0, 70)
-                        .replace(/^\w+:\s/, '')
-                        .replace(/([^\w])/g, '\\$1')
-                        + '[^\r\n]+'
-                    );
-
-                    dump.s = String(errobj.stack)
-                        .replace(omsg, '').replace(re, '')
-                        .split("\n").map(mTrim).filter(String);
-
-                    for (var idx = 1; idx < dump.s.length; idx++) {
-                        var s = dump.s[idx];
-
-                        if (s.indexOf('@resource:') > 0 || s.indexOf('@jar:') > 0) {
-                            maxStackLines = idx;
-                            break;
-                        }
-                    }
-
-                    dump.s = dump.s.splice(0, maxStackLines).join("\n");
-
-                    if (dump.s.indexOf('Unknown script code:') !== -1
-                        || dump.s.indexOf('Function code:') !== -1
-                        || dump.s.indexOf('(eval code:') !== -1
-                        || dump.s.indexOf('(unknown source)') !== -1
-                        || /<anonymous>:\d+:/.test(dump.s)) {
-
-                        console.warn('Got uncaught exception from unknown resource,'
-                            + ' your MEGA account might be compromised.');
-                        console.error(msg, errobj, errobj && errobj.stack, url, ln);
-                        return false;
-                    }
-                }
-
-                if (typeof eventlog === 'function' && !errobj.udata) {
-                    eventlog(99702, true);
-                }
-            }
-            if (cn) dump.c = cn;
-
-            if (/Access to '.*' from script denied/.test(dump.m)) {
-                console.error(dump.m, dump);
-                return false;
-            }
-
-            if (ln == 0 && !dump.s)
-            {
-                if (dump.m.toLowerCase().indexOf('out of memory') != -1) dump.m = '!Fatal! Out Of Memory.';
-                else dump.m = dump.m.replace(/[^\s\w]/gi,'') || ('[!] ' + msg);
-            }
-            if (location.hostname === 'beta.mega.nz' || location.hostname.indexOf("developers.") > -1) dump.m = '[' + location.hostname + '] ' + dump.m;
-
-            try
-            {
-                var crashes = JSON.parse(localStorage.crashes || '{}');
-                var checksum = MurmurHash3(JSON.stringify(dump), 0x4ef5391a);
-
-                if (crashes.v != sbid) crashes = { v : sbid };
-
-                if (crashes[checksum])
-                {
-                    // Reported less than 10 days ago?
-                    if (Date.now() - crashes[checksum] < 864000000) return false;
-                }
-                dump.x = checksum;
-                crashes[checksum] = Date.now();
-                localStorage.crashes = JSON.stringify(crashes);
-                cc = Object.keys(crashes).length;
-            }
-            catch(e) {
-                delete localStorage.crashes;
-            }
-
-            __cdumps.push(dump);
-            if (__cd_t) clearTimeout(__cd_t);
-            var report = tryCatch(function()
-            {
-                function ctx(id)
-                {
-                    return {
-                        callback : function(res)
-                        {
-                            if (res === EOVERQUOTA)
-                            {
-                                __cdumps = new Array(4);
-                                if (__cd_t) clearTimeout(__cd_t);
-
-                                if (id)
-                                {
-                                    var crashes = JSON.parse(localStorage.crashes || '{}');
-                                    delete crashes[id];
-                                    localStorage.crashes = JSON.stringify(crashes);
-                                }
-                            }
-                        }
-                    };
-                }
-                var ids = [], uds = [], r = 1;
-                for (var i in __cdumps)
-                {
-                    var dump = __cdumps[i];
-
-                    if (dump.x) { ids.push(dump.x); delete dump.x; }
-                    if (dump.d) { uds.push(dump.d); delete dump.d; }
-                    if (dump.l < 0) r = 0;
-                }
-
-                var report = {};
-                report.ua = navigator.userAgent;
-                report.io = window.dlMethod && dlMethod.name;
-                report.sb = sbid;
-                report.tp = typeof $ !== 'undefined' && $.transferprogress;
-                report.id = ids.join(",");
-                report.ud = uds;
-                report.cc = cc;
-
-                if (is_chrome_firefox)
-                {
-                    report.mo = mozBrowserID + '::' + is_chrome_firefox + '::' + mozMEGAExtensionVersion;
-                }
-                report = JSON.stringify(r? report:{});
-
-                var version = buildVersion.website;
-
-                if (is_extension) {
-                    if (is_chrome_firefox || is_firefox_web_ext) {
-                        version = buildVersion.firefox;
-                    }
-                    else if (window.chrome) {
-                        version = buildVersion.chrome;
-                    }
-                }
-
-                for (var i in __cdumps)
-                {
-                    api_req({
-                        a: 'cd2',
-                        c: JSON.stringify(__cdumps[i]),
-                        v: report,
-                        t: version,
-                        s: window.location.host
-                    }, ctx(ids[i]));
-                }
-                __cd_t = 0;
-                __cdumps = [];
-            });
-            __cd_t = setTimeout(function() {
-                report();
-            }, 3000);
-
-            return false;
-        };
-    }
+    // // Do not report exceptions if this build is older than 10 days
+    // var exTimeLeft = ((buildVersion.timestamp + (10 * 86400)) * 1000) > Date.now();
+    //
+    // if (!d && exTimeLeft && (location.host === 'mega.nz' || is_extension || onBetaW)) {
+    //     var __cdumps = [], __cd_t;
+    //     window.onerror = function __MEGAExceptionHandler(msg, url, ln, cn, errobj) {
+    //         function mTrim(s) {
+    //             return String(s)
+    //                 .replace(/resource:.+->\s/, '')
+    //                 .replace(/blob:[^:\s]+/, '..')
+    //                 .replace(/\.\.:\/\/[^:\s]+/, '..')
+    //                 .replace('chrome://mega/content', '..')
+    //                 .replace(/file:.+extensions/, '..fx')
+    //                 .replace(/(?: line \d+ > eval)+/g, ' >.eval')
+    //                 .trim();
+    //         }
+    //
+    //         if (__cdumps.length > 3) return false;
+    //
+    //         var dump = {
+    //             l: ln,
+    //             f: mTrim(url),
+    //             m: mTrim(msg)
+    //                 .replace(/'[a-z]+:\/+[^']+(?:'|$)/gi, function (url) {
+    //                     url = url.substr(1);
+    //                     if (url[url.length - 1] === "'") {
+    //                         url = url.substr(0, url.length - 1);
+    //                     }
+    //                     var a = document.createElement('a');
+    //                     a.href = url;
+    //                     return "'" + (a.origin !== 'null' && a.origin
+    //                         || (a.protocol + '//' + a.hostname)) + "...'";
+    //                 })
+    //                 .replace(/(Cannot read property )('[\w-]{8}')/, "$1'<h>?'")
+    //                 .replace(/(Access to '\.\.).*(' from script denied)/, '$1$2')
+    //                 .replace(/gfs\w+\.userstorage/, 'gfs...userstorage')
+    //                 .replace(/^Uncaught\W*(?:exception\W*)?/i, ''),
+    //         }, cc;
+    //         var sbid = +('' + (document.querySelector('script[src*="secureboot"]') || {}).src).split('=').pop() | 0;
+    //
+    //         if (~dump.m.indexOf('[[:i]]')) {
+    //             return false;
+    //         }
+    //
+    //         if ((mega.flags & window.MEGAFLAG_MDBOPEN)
+    //             && (dump.m === 'InvalidStateError'
+    //                 || (dump.m === 'UnknownError'))) {
+    //             // Prevent InvalidStateError exceptions from indexedDB.open
+    //             // caused while using Private Browser Mode on Firefox.
+    //             return false;
+    //         }
+    //
+    //         if (dump.m.indexOf('this.get(...).querySelectorAll') !== -1
+    //             || String(errobj && errobj.stack).indexOf('<anonymous>:1:18') !== -1
+    //             || dump.m.indexOf('TypeError: this.get is not a function') !== -1) {
+    //             // ^ this seems a quirk on latest Chrome (~46+) or a bogus extension
+    //             dump.l = 1;
+    //             errobj = null;
+    //             dump.m = 'TypeError: this.get(...).querySelectorAll is not a function';
+    //         }
+    //
+    //         if (~dump.m.indexOf("\n")) {
+    //             var lns = dump.m.split(/\r?\n/).map(String.trim).filter(String);
+    //
+    //             if (lns.length > 6) {
+    //                 dump.m = [].concat(lns.slice(0, 2), "[..!]", lns.slice(-2)).join(" ");
+    //             }
+    //         }
+    //         dump.m = (is_mobile ? '[mobile] ' : is_embed ? '[embed] ' : is_drop ? '[drop] ' : '') + dump.m.replace(/\s+/g, ' ');
+    //
+    //         if (!window.jsl_done && !window.u_checked) {
+    //             // Alert the user if there was an uncaught exception while
+    //             // loading the site, this should only happen on some fancy
+    //             // browsers other than what we use during development, and
+    //             // hopefully they'll report it back to us for troubleshoot
+    //             if ((url || ln !== 1) && dump.m.indexOf('Error: Blocked') < 0) {
+    //                 siteLoadError(dump.m, url + ':' + ln);
+    //             }
+    //             else {
+    //                 console.error(dump.m, arguments);
+    //             }
+    //             return;
+    //         }
+    //
+    //         if (dump.m.indexOf('Permission denied to access property') > -1) {
+    //             // Some Firefox extension is injecting some script(s)...
+    //             console.warn('Your account is only as secure as your computer...');
+    //             console.warn('Check your installed extensions and which one is injecting scripts on this page...');
+    //             return false;
+    //         }
+    //
+    //         if (errobj) {
+    //             if (errobj.udata) dump.d = errobj.udata;
+    //             if (errobj.stack) {
+    //                 var maxStackLines = 15;
+    //                 var omsg = String(msg).trim();
+    //                 var re = RegExp(
+    //                     omsg.substr(0, 70)
+    //                         .replace(/^\w+:\s/, '')
+    //                         .replace(/([^\w])/g, '\\$1')
+    //                     + '[^\r\n]+'
+    //                 );
+    //
+    //                 dump.s = String(errobj.stack)
+    //                     .replace(omsg, '').replace(re, '')
+    //                     .split("\n").map(mTrim).filter(String);
+    //
+    //                 for (var idx = 1; idx < dump.s.length; idx++) {
+    //                     var s = dump.s[idx];
+    //
+    //                     if (s.indexOf('@resource:') > 0 || s.indexOf('@jar:') > 0) {
+    //                         maxStackLines = idx;
+    //                         break;
+    //                     }
+    //                 }
+    //
+    //                 dump.s = dump.s.splice(0, maxStackLines).join("\n");
+    //
+    //                 if (dump.s.indexOf('Unknown script code:') !== -1
+    //                     || dump.s.indexOf('Function code:') !== -1
+    //                     || dump.s.indexOf('(eval code:') !== -1
+    //                     || dump.s.indexOf('(unknown source)') !== -1
+    //                     || /<anonymous>:\d+:/.test(dump.s)) {
+    //
+    //                     console.warn('Got uncaught exception from unknown resource,'
+    //                         + ' your MEGA account might be compromised.');
+    //                     console.error(msg, errobj, errobj && errobj.stack, url, ln);
+    //                     return false;
+    //                 }
+    //             }
+    //
+    //             if (typeof eventlog === 'function' && !errobj.udata) {
+    //                 eventlog(99702, true);
+    //             }
+    //         }
+    //         if (cn) dump.c = cn;
+    //
+    //         if (/Access to '.*' from script denied/.test(dump.m)) {
+    //             console.error(dump.m, dump);
+    //             return false;
+    //         }
+    //
+    //         if (ln == 0 && !dump.s) {
+    //             if (dump.m.toLowerCase().indexOf('out of memory') != -1) dump.m = '!Fatal! Out Of Memory.';
+    //             else dump.m = dump.m.replace(/[^\s\w]/gi, '') || ('[!] ' + msg);
+    //         }
+    //         if (location.hostname === 'beta.mega.nz' || location.hostname.indexOf("developers.") > -1) dump.m = '[' + location.hostname + '] ' + dump.m;
+    //
+    //         try {
+    //             var crashes = JSON.parse(localStorage.crashes || '{}');
+    //             var checksum = MurmurHash3(JSON.stringify(dump), 0x4ef5391a);
+    //
+    //             if (crashes.v != sbid) crashes = {v: sbid};
+    //
+    //             if (crashes[checksum]) {
+    //                 // Reported less than 10 days ago?
+    //                 if (Date.now() - crashes[checksum] < 864000000) return false;
+    //             }
+    //             dump.x = checksum;
+    //             crashes[checksum] = Date.now();
+    //             localStorage.crashes = JSON.stringify(crashes);
+    //             cc = Object.keys(crashes).length;
+    //         }
+    //         catch (e) {
+    //             delete localStorage.crashes;
+    //         }
+    //
+    //         __cdumps.push(dump);
+    //         if (__cd_t) clearTimeout(__cd_t);
+    //         var report = tryCatch(function () {
+    //             function ctx(id) {
+    //                 return {
+    //                     callback: function (res) {
+    //                         if (res === EOVERQUOTA) {
+    //                             __cdumps = new Array(4);
+    //                             if (__cd_t) clearTimeout(__cd_t);
+    //
+    //                             if (id) {
+    //                                 var crashes = JSON.parse(localStorage.crashes || '{}');
+    //                                 delete crashes[id];
+    //                                 localStorage.crashes = JSON.stringify(crashes);
+    //                             }
+    //                         }
+    //                     }
+    //                 };
+    //             }
+    //
+    //             var ids = [], uds = [], r = 1;
+    //             for (var i in __cdumps) {
+    //                 var dump = __cdumps[i];
+    //
+    //                 if (dump.x) {
+    //                     ids.push(dump.x);
+    //                     delete dump.x;
+    //                 }
+    //                 if (dump.d) {
+    //                     uds.push(dump.d);
+    //                     delete dump.d;
+    //                 }
+    //                 if (dump.l < 0) r = 0;
+    //             }
+    //
+    //             var report = {};
+    //             report.ua = navigator.userAgent;
+    //             report.io = window.dlMethod && dlMethod.name;
+    //             report.sb = sbid;
+    //             report.tp = typeof $ !== 'undefined' && $.transferprogress;
+    //             report.id = ids.join(",");
+    //             report.ud = uds;
+    //             report.cc = cc;
+    //
+    //             if (is_chrome_firefox) {
+    //                 report.mo = mozBrowserID + '::' + is_chrome_firefox + '::' + mozMEGAExtensionVersion;
+    //             }
+    //             report = JSON.stringify(r ? report : {});
+    //
+    //             var version = buildVersion.website;
+    //
+    //             if (is_extension) {
+    //                 if (is_chrome_firefox || is_firefox_web_ext) {
+    //                     version = buildVersion.firefox;
+    //                 }
+    //                 else if (window.chrome) {
+    //                     version = buildVersion.chrome;
+    //                 }
+    //             }
+    //
+    //             for (var i in __cdumps) {
+    //                 api_req({
+    //                     a: 'cd2',
+    //                     c: JSON.stringify(__cdumps[i]),
+    //                     v: report,
+    //                     t: version,
+    //                     s: window.location.host
+    //                 }, ctx(ids[i]));
+    //             }
+    //             __cd_t = 0;
+    //             __cdumps = [];
+    //         });
+    //         __cd_t = setTimeout(function () {
+    //             report();
+    //         }, 3000);
+    //
+    //         return false;
+    //     };
+    // }
 
     /**
+     * TODO 检测用户当前在浏览器中设置的语言
      * Detects which language the user currently has set in their browser
      * @returns {String} Returns the two letter language code e.g. 'en', 'es' etc
      */
-    var detectLang = function() {
+    var detectLang = function () {
         'use strict';
 
         // Get the preferred language in their browser
@@ -1858,7 +1863,7 @@ else if (!b_u) {
      * @param {String} language
      * @returns {String}
      */
-    var getLanguageFilePath = function(language) {
+    var getLanguageFilePath = function (language) {
         'use strict';
 
         // If the sh1 (filename with hashes) array has been created from deploy script
@@ -1904,602 +1909,665 @@ else if (!b_u) {
     // Get the language file path e.g. lang/en.json or 'lang/en_7a8e15911490...f1878e1eb3.json'
     var langFilepath = getLanguageFilePath(lang);
 
-    jsl.push({f:langFilepath, n: 'lang', j:3});
-    jsl.push({f:'sjcl.js', n: 'sjcl_js', j:1});
-    jsl.push({f:'nodedec.js', n: 'nodedec_js', j:1});
-    jsl.push({f:'js/vendor/jquery-2.2.1.js', n: 'jquery', j:1, w:10});
-    jsl.push({f:'js/vendor/jquery-ui.js', n: 'jqueryui_js', j:1, w:10});
-    jsl.push({f:'js/vendor/jquery.mousewheel.js', n: 'jquerymouse_js', j:1});
-    jsl.push({f:'js/vendor/jquery.jscrollpane.js', n: 'jscrollpane_js', j:1});
-    jsl.push({f:'js/jscrollpane.utils.js', n: 'jscrollpane_utils_js', j: 1});
-    jsl.push({f:'js/jquery.misc.js', n: 'jquerymisc_js', j:1});
-    jsl.push({f:'js/vendor/megaLogger.js', n: 'megaLogger_js', j:1});
-    jsl.push({f:'js/vendor/jquery.fullscreen.js', n: 'jquery_fullscreen', j:1, w:10});
+    jsl.push({f: langFilepath, n: 'lang', j: 3});
+    jsl.push({f: 'sjcl.js', n: 'sjcl_js', j: 1});
+    jsl.push({f: 'nodedec.js', n: 'nodedec_js', j: 1});
+    jsl.push({f: 'js/vendor/jquery-2.2.1.js', n: 'jquery', j: 1, w: 10});
+    jsl.push({f: 'js/vendor/jquery-ui.js', n: 'jqueryui_js', j: 1, w: 10});
+    jsl.push({f: 'js/vendor/jquery.mousewheel.js', n: 'jquerymouse_js', j: 1});
+    jsl.push({f: 'js/vendor/jquery.jscrollpane.js', n: 'jscrollpane_js', j: 1});
+    jsl.push({f: 'js/jscrollpane.utils.js', n: 'jscrollpane_utils_js', j: 1});
+    jsl.push({f: 'js/jquery.misc.js', n: 'jquerymisc_js', j: 1});
+    jsl.push({f: 'js/vendor/megaLogger.js', n: 'megaLogger_js', j: 1});
+    jsl.push({f: 'js/vendor/jquery.fullscreen.js', n: 'jquery_fullscreen', j: 1, w: 10});
 
-    jsl.push({f:'js/utils/polyfills.js', n: 'js_utils_polyfills_js', j: 1});
-    jsl.push({f:'js/utils/browser.js', n: 'js_utils_browser_js', j: 1});
-    jsl.push({f:'js/utils/clipboard.js', n: 'js_utils_clipboard_js', j: 1});
-    jsl.push({f:'js/utils/conv.js', n: 'js_utils_conv_js', j: 1});
-    jsl.push({f:'js/utils/crypt.js', n: 'js_utils_crypt_js', j: 1});
-    jsl.push({f:'js/utils/debug.js', n: 'js_utils_debug_js', j: 1});
-    jsl.push({f:'js/utils/dom.js', n: 'js_utils_dom_js', j: 1});
-    jsl.push({f:'js/utils/events.js', n: 'js_utils_events_js', j: 1});
-    jsl.push({f:'js/utils/locale.js', n: 'js_utils_locale_js', j: 1});
-    jsl.push({f:'js/utils/media.js', n: 'js_utils_pictools_js', j: 1});
-    jsl.push({f:'js/utils/network.js', n: 'js_utils_network_js', j: 1});
-    jsl.push({f:'js/utils/splitter.js', n: 'js_utils_splitter_js', j: 1});
-    jsl.push({f:'js/utils/stringcrypt.js', n: 'js_utils_stringcrypt_js', j: 1});
-    jsl.push({f:'js/utils/timers.js', n: 'js_utils_timers_js', j: 1});
-    jsl.push({f:'js/utils/watchdog.js', n: 'js_utils_watchdog_js', j: 1});
-    jsl.push({f:'js/utils/workers.js', n: 'js_utils_workers_js', j: 1});
+    jsl.push({f: 'js/utils/polyfills.js', n: 'js_utils_polyfills_js', j: 1});
+    jsl.push({f: 'js/utils/browser.js', n: 'js_utils_browser_js', j: 1});
+    jsl.push({f: 'js/utils/clipboard.js', n: 'js_utils_clipboard_js', j: 1});
+    jsl.push({f: 'js/utils/conv.js', n: 'js_utils_conv_js', j: 1});
+    jsl.push({f: 'js/utils/crypt.js', n: 'js_utils_crypt_js', j: 1});
+    jsl.push({f: 'js/utils/debug.js', n: 'js_utils_debug_js', j: 1});
+    jsl.push({f: 'js/utils/dom.js', n: 'js_utils_dom_js', j: 1});
+    jsl.push({f: 'js/utils/events.js', n: 'js_utils_events_js', j: 1});
+    jsl.push({f: 'js/utils/locale.js', n: 'js_utils_locale_js', j: 1});
+    jsl.push({f: 'js/utils/media.js', n: 'js_utils_pictools_js', j: 1});
+    jsl.push({f: 'js/utils/network.js', n: 'js_utils_network_js', j: 1});
+    jsl.push({f: 'js/utils/splitter.js', n: 'js_utils_splitter_js', j: 1});
+    jsl.push({f: 'js/utils/stringcrypt.js', n: 'js_utils_stringcrypt_js', j: 1});
+    jsl.push({f: 'js/utils/timers.js', n: 'js_utils_timers_js', j: 1});
+    jsl.push({f: 'js/utils/watchdog.js', n: 'js_utils_watchdog_js', j: 1});
+    jsl.push({f: 'js/utils/workers.js', n: 'js_utils_workers_js', j: 1});
 
-    jsl.push({f:'js/functions.js', n: 'functions_js', j:1});
-    jsl.push({f:'js/crypto.js', n: 'crypto_js', j:1,w:5});
-    jsl.push({f:'js/account.js', n: 'user_js', j:1});
-    jsl.push({f:'js/security.js', n: 'security_js', j: 1, w: 5});
-    jsl.push({f:'js/two-factor-auth.js', n: 'two_factor_auth_js', j: 1, w: 5});
-    jsl.push({f:'js/attr.js', n: 'mega_attr_js', j:1});
-    jsl.push({f:'js/mega.js', n: 'mega_js', j:1,w:7});
-    jsl.push({f:'js/megaPromise.js', n: 'megapromise_js', j:1,w:5});
+    jsl.push({f: 'js/functions.js', n: 'functions_js', j: 1});
+    jsl.push({f: 'js/crypto.js', n: 'crypto_js', j: 1, w: 5});
+    jsl.push({f: 'js/account.js', n: 'user_js', j: 1}); //TODO account
+    jsl.push({f: 'js/security.js', n: 'security_js', j: 1, w: 5});
+    jsl.push({f: 'js/two-factor-auth.js', n: 'two_factor_auth_js', j: 1, w: 5});
+    jsl.push({f: 'js/attr.js', n: 'mega_attr_js', j: 1});
+    jsl.push({f: 'js/mega.js', n: 'mega_js', j: 1, w: 7});
+    jsl.push({f: 'js/megaPromise.js', n: 'megapromise_js', j: 1, w: 5});
 
-    jsl.push({f:'js/mDB.js', n: 'mDB_js', j:1});
-    jsl.push({f:'js/mouse.js', n: 'mouse_js', j:1});
-    jsl.push({f:'js/datastructs.js', n: 'datastructs_js', j:1});
-    jsl.push({f:'js/idbkvstorage.js', n: 'idbkvstorage_js', j: 1, w: 5});
-    jsl.push({f:'js/sharedlocalkvstorage.js', n: 'sharedlocalkvstorage_js', j: 1, w: 5});
+    jsl.push({f: 'js/mDB.js', n: 'mDB_js', j: 1});
+    jsl.push({f: 'js/mouse.js', n: 'mouse_js', j: 1});
+    jsl.push({f: 'js/datastructs.js', n: 'datastructs_js', j: 1});
+    jsl.push({f: 'js/idbkvstorage.js', n: 'idbkvstorage_js', j: 1, w: 5});
+    jsl.push({f: 'js/sharedlocalkvstorage.js', n: 'sharedlocalkvstorage_js', j: 1, w: 5});
 
-    jsl.push({f:'js/tlvstore.js', n: 'tlvstore_js', j:1});
-    jsl.push({f:'js/vendor/jsbn.js', n: 'jsbn_js', j:1, w:2});
-    jsl.push({f:'js/vendor/jsbn2.js', n: 'jsbn2_js', j:1, w:2});
-    jsl.push({f:'js/vendor/nacl-fast.js', n: 'nacl_js', j:1,w:7});
-    jsl.push({f:'js/vendor/dexie.js', n: 'dexie_js', j:1,w:5});
+    jsl.push({f: 'js/tlvstore.js', n: 'tlvstore_js', j: 1});
+    jsl.push({f: 'js/vendor/jsbn.js', n: 'jsbn_js', j: 1, w: 2});
+    jsl.push({f: 'js/vendor/jsbn2.js', n: 'jsbn2_js', j: 1, w: 2});
+    jsl.push({f: 'js/vendor/nacl-fast.js', n: 'nacl_js', j: 1, w: 7});
+    jsl.push({f: 'js/vendor/dexie.js', n: 'dexie_js', j: 1, w: 5});
 
-    jsl.push({f:'js/authring.js', n: 'authring_js', j:1});
-    jsl.push({f:'html/js/login.js', n: 'login_js', j:1});
-    jsl.push({f:'js/ui/export.js', n: 'export_js', j:1,w:1});
-    jsl.push({f:'html/js/key.js', n: 'key_js', j:1});
+    jsl.push({f: 'js/authring.js', n: 'authring_js', j: 1});
+    jsl.push({f: 'html/js/login.js', n: 'login_js', j: 1});
+    jsl.push({f: 'js/ui/export.js', n: 'export_js', j: 1, w: 1});
+    jsl.push({f: 'html/js/key.js', n: 'key_js', j: 1});
 
-    jsl.push({f:'js/useravatar.js', n: 'contact_avatar_js', j:1,w:3});
-    jsl.push({f:'css/avatars.css', n: 'avatars_css', j:2,w:5,c:1,d:1,cache:1});
-    jsl.push({f:'js/cms.js', n: 'cms_js', j:1});
+    jsl.push({f: 'js/useravatar.js', n: 'contact_avatar_js', j: 1, w: 3});
+    jsl.push({f: 'css/avatars.css', n: 'avatars_css', j: 2, w: 5, c: 1, d: 1, cache: 1});
+    jsl.push({f: 'js/cms.js', n: 'cms_js', j: 1});
 
     // Common desktop and mobile, bottom pages
-    jsl.push({f:'css/bottom-pages.css', n: 'bottom-pages_css', j:2,w:5,c:1,d:1,cache:1});
-    jsl.push({f:'css/bottom-menu.css', n: 'bottom-menu_css', j:2,w:5,c:1,d:1,cache:1});
-    jsl.push({f:'css/pro.css', n: 'pro_css', j:2,w:5,c:1,d:1,cache:1});
-    jsl.push({f:'css/startpage.css', n: 'startpage_css', j:2,w:5,c:1,d:1,cache:1});
-    jsl.push({f:'css/top-menu.css', n: 'top_menu_css', j: 2, w: 5, c: 1, d: 1, cache: 1});
-    jsl.push({f:'css/icons.css', n: 'icons_css', j: 2, w: 5, c: 1, d: 1, cache: 1});
-    jsl.push({f:'css/spinners.css', n: 'spinners_css', j: 2, w: 5, c: 1, d: 1, cache: 1});
-    jsl.push({f:'css/retina-images.css', n: 'retina_images_css', j: 2, w: 5, c: 1, d: 1, cache: 1});
-    jsl.push({f:'css/psa.css', n: 'psa_css', j: 2, w: 5, c: 1, d: 1, cache: 1});
-    jsl.push({f:'html/start.html', n: 'start', j:0});
-    jsl.push({f:'html/js/start.js', n: 'start_js', j:1});
-    jsl.push({f:'html/js/bottompage.js', n: 'bottompage_js', j:1});
-    jsl.push({f:'html/pagesmenu.html', n: 'pagesmenu', j:0});
-    jsl.push({f:'html/bottom2.html', n: 'bottom2',j:0});
-    jsl.push({f:'html/megainfo.html', n: 'megainfo', j:0});
-    jsl.push({f:'js/thumbnail.js', n: 'thumbnail_js', j:1});
-    jsl.push({f:'js/vendor/exif.js', n: 'exif_js', j:1, w:3});
-    jsl.push({f:'js/vendor/smartcrop.js', n: 'smartcrop_js', j:1, w:7});
-    jsl.push({f:'js/vendor/jquery.qrcode.js', n: 'jqueryqrcode', j:1});
-    jsl.push({f:'js/vendor/qrcode.js', n: 'qrcode', j:1,w:2, g: 'vendor'});
-    jsl.push({f:'js/ui/publicServiceAnnouncement.js', n: 'psa_js', j:1,w:1});
+    jsl.push({f: 'css/bottom-pages.css', n: 'bottom-pages_css', j: 2, w: 5, c: 1, d: 1, cache: 1});
+    jsl.push({f: 'css/bottom-menu.css', n: 'bottom-menu_css', j: 2, w: 5, c: 1, d: 1, cache: 1});
+    jsl.push({f: 'css/pro.css', n: 'pro_css', j: 2, w: 5, c: 1, d: 1, cache: 1});
+    jsl.push({f: 'css/startpage.css', n: 'startpage_css', j: 2, w: 5, c: 1, d: 1, cache: 1});
+    jsl.push({f: 'css/top-menu.css', n: 'top_menu_css', j: 2, w: 5, c: 1, d: 1, cache: 1});
+    jsl.push({f: 'css/icons.css', n: 'icons_css', j: 2, w: 5, c: 1, d: 1, cache: 1});
+    jsl.push({f: 'css/spinners.css', n: 'spinners_css', j: 2, w: 5, c: 1, d: 1, cache: 1});
+    jsl.push({f: 'css/retina-images.css', n: 'retina_images_css', j: 2, w: 5, c: 1, d: 1, cache: 1});
+    jsl.push({f: 'css/psa.css', n: 'psa_css', j: 2, w: 5, c: 1, d: 1, cache: 1});
+    jsl.push({f: 'html/start.html', n: 'start', j: 0});
+    jsl.push({f: 'html/js/start.js', n: 'start_js', j: 1});
+    jsl.push({f: 'html/js/bottompage.js', n: 'bottompage_js', j: 1});
+    jsl.push({f: 'html/pagesmenu.html', n: 'pagesmenu', j: 0});
+    jsl.push({f: 'html/bottom2.html', n: 'bottom2', j: 0});
+    jsl.push({f: 'html/megainfo.html', n: 'megainfo', j: 0});
+    jsl.push({f: 'js/thumbnail.js', n: 'thumbnail_js', j: 1});
+    jsl.push({f: 'js/vendor/exif.js', n: 'exif_js', j: 1, w: 3});
+    jsl.push({f: 'js/vendor/smartcrop.js', n: 'smartcrop_js', j: 1, w: 7});
+    jsl.push({f: 'js/vendor/jquery.qrcode.js', n: 'jqueryqrcode', j: 1});
+    jsl.push({f: 'js/vendor/qrcode.js', n: 'qrcode', j: 1, w: 2, g: 'vendor'});
+    jsl.push({f: 'js/ui/publicServiceAnnouncement.js', n: 'psa_js', j: 1, w: 1});
 
     if (!is_mobile) {
-        jsl.push({f:'js/filedrag.js', n: 'filedrag_js', j:1});
-        jsl.push({f:'js/vendor/verge.js', n: 'verge', j:1, w:5});
-        jsl.push({f:'js/jquery.tokeninput.js', n: 'jquerytokeninput_js', j:1});
-        jsl.push({f:'js/jquery.checkboxes.js', n: 'checkboxes_js', j:1});
+        jsl.push({f: 'js/filedrag.js', n: 'filedrag_js', j: 1});
+        jsl.push({f: 'js/vendor/verge.js', n: 'verge', j: 1, w: 5});
+        jsl.push({f: 'js/jquery.tokeninput.js', n: 'jquerytokeninput_js', j: 1});
+        jsl.push({f: 'js/jquery.checkboxes.js', n: 'checkboxes_js', j: 1});
 
         // This is not used anymore, unless we process and store credit card details for renewals again
         // jsl.push({f:'js/paycrypt.js', n: 'paycrypt_js', j:1 });
 
         // Desktop notifications
-        jsl.push({f:'js/vendor/notification.js', n: 'notification_js', j:1,w:7});
+        jsl.push({f: 'js/vendor/notification.js', n: 'notification_js', j: 1, w: 7});
 
         // Other
-        jsl.push({f:'js/vendor/moment.js', n: 'moment_js', j:1,w:1});
-        jsl.push({f:'js/vendor/perfect-scrollbar.js', n: 'ps_js', j:1,w:1});
+        jsl.push({f: 'js/vendor/moment.js', n: 'moment_js', j: 1, w: 1});
+        jsl.push({f: 'js/vendor/perfect-scrollbar.js', n: 'ps_js', j: 1, w: 1});
 
         // Google Import Contacts
-        jsl.push({f:'js/gContacts.js', n: 'gcontacts_js', j:1,w:3});
+        jsl.push({f: 'js/gContacts.js', n: 'gcontacts_js', j: 1, w: 3});
 
         // UI Elements
-        jsl.push({f:'js/ui/megaRender.js', n: 'megarender_js', j:1,w:1});
-        jsl.push({f:'js/ui/dialog.js', n: 'dialogui_js', j:1,w:1});
-        jsl.push({f:'js/ui/credentialsWarningDialog.js', n: 'creddialogui_js', j:1,w:1});
-        jsl.push({f:'js/ui/loginRequiredDialog.js', n: 'loginrequireddialog_js', j:1,w:1});
-        jsl.push({f:'js/ui/registerDialog.js', n: 'registerdialog_js', j:1,w:1});
-        jsl.push({f:'js/ui/keySignatureWarningDialog.js', n: 'mega_js', j:1,w:7});
-        jsl.push({f:'js/ui/feedbackDialog.js', n: 'feedbackdialogui_js', j:1,w:1});
-        jsl.push({f:'js/ui/languageDialog.js', n: 'mega_js', j:1,w:7});
-        jsl.push({f:'js/ui/alarm.js', n: 'alarm_js', j:1,w:1});
-        jsl.push({f:'js/ui/toast.js', n: 'toast_js', j:1,w:1});
-        jsl.push({f:'js/ui/transfers-popup.js', n: 'transfers_popup_js', j:1,w:1});
-        jsl.push({f:'js/ui/passwordReminderDialog.js', n: 'prd_js', j:1,w:1});
-        jsl.push({f:'js/ui/top-tooltip-login.js', n: 'top-tooltip-login', j:1});
-        jsl.push({f:'html/megadrop.html', n: 'megadrop', j:0});
-        jsl.push({f:'html/nomegadrop.html', n: 'nomegadrop', j:0});
-        jsl.push({f:'js/megadrop.js', n: 'megadrop_js', j:1});
+        jsl.push({f: 'js/ui/megaRender.js', n: 'megarender_js', j: 1, w: 1});
+        jsl.push({f: 'js/ui/dialog.js', n: 'dialogui_js', j: 1, w: 1});
+        jsl.push({f: 'js/ui/credentialsWarningDialog.js', n: 'creddialogui_js', j: 1, w: 1});
+        jsl.push({f: 'js/ui/loginRequiredDialog.js', n: 'loginrequireddialog_js', j: 1, w: 1});
+        jsl.push({f: 'js/ui/registerDialog.js', n: 'registerdialog_js', j: 1, w: 1});
+        jsl.push({f: 'js/ui/keySignatureWarningDialog.js', n: 'mega_js', j: 1, w: 7});
+        jsl.push({f: 'js/ui/feedbackDialog.js', n: 'feedbackdialogui_js', j: 1, w: 1});
+        jsl.push({f: 'js/ui/languageDialog.js', n: 'mega_js', j: 1, w: 7});
+        jsl.push({f: 'js/ui/alarm.js', n: 'alarm_js', j: 1, w: 1});
+        jsl.push({f: 'js/ui/toast.js', n: 'toast_js', j: 1, w: 1});
+        jsl.push({f: 'js/ui/transfers-popup.js', n: 'transfers_popup_js', j: 1, w: 1});
+        jsl.push({f: 'js/ui/passwordReminderDialog.js', n: 'prd_js', j: 1, w: 1});
+        jsl.push({f: 'js/ui/top-tooltip-login.js', n: 'top-tooltip-login', j: 1});
+        jsl.push({f: 'html/megadrop.html', n: 'megadrop', j: 0});
+        jsl.push({f: 'html/nomegadrop.html', n: 'nomegadrop', j: 0});
+        jsl.push({f: 'js/megadrop.js', n: 'megadrop_js', j: 1});
     } // !is_mobile
 
     // Transfers
-    jsl.push({f:'js/transfers/xhr2.js', n: 'xhr_js', j:1});
-    jsl.push({f:'js/transfers/queue.js', n: 'queue', j:1,w:4});
-    jsl.push({f:'js/transfers/utils.js', n: 'tutils', j:1,w:4});
-    jsl.push({f:'js/transfers/meths/cache.js', n: 'dl_cache', j:1,w:3});
-    jsl.push({f:'js/transfers/meths/flash.js', n: 'dl_flash', j:1,w:3});
-    jsl.push({f:'js/transfers/meths/memory.js', n: 'dl_memory', j:1,w:3});
-    jsl.push({f:'js/transfers/meths/filesystem.js', n: 'dl_chrome', j:1,w:3});
+    jsl.push({f: 'js/transfers/xhr2.js', n: 'xhr_js', j: 1});
+    jsl.push({f: 'js/transfers/queue.js', n: 'queue', j: 1, w: 4});
+    jsl.push({f: 'js/transfers/utils.js', n: 'tutils', j: 1, w: 4});
+    jsl.push({f: 'js/transfers/meths/cache.js', n: 'dl_cache', j: 1, w: 3});
+    jsl.push({f: 'js/transfers/meths/flash.js', n: 'dl_flash', j: 1, w: 3});
+    jsl.push({f: 'js/transfers/meths/memory.js', n: 'dl_memory', j: 1, w: 3});
+    jsl.push({f: 'js/transfers/meths/filesystem.js', n: 'dl_chrome', j: 1, w: 3});
     // jsl.push({f:'js/transfers/meths/mediasource.js', n: 'dl_mediasource', j:1,w:3});
-    jsl.push({f:'js/transfers/downloader.js', n: 'dl_downloader', j:1,w:3});
-    jsl.push({f:'js/transfers/decrypter.js', n: 'dl_decrypter', j: 1, w: 3});
-    jsl.push({f:'js/transfers/download2.js', n: 'dl_js', j:1,w:3});
-    jsl.push({f:'js/transfers/meths.js', n: 'dl_meths', j: 1, w: 3});
-    jsl.push({f:'js/transfers/upload2.js', n: 'upload_js', j:1,w:2});
-    jsl.push({f:'js/transfers/reader.js', n: 'upload_reader_js', j: 1, w: 2});
-    jsl.push({f:'js/transfers/zip64.js', n: 'zip_js', j: 1});
+    jsl.push({f: 'js/transfers/downloader.js', n: 'dl_downloader', j: 1, w: 3});
+    jsl.push({f: 'js/transfers/decrypter.js', n: 'dl_decrypter', j: 1, w: 3});
+    jsl.push({f: 'js/transfers/download2.js', n: 'dl_js', j: 1, w: 3});
+    jsl.push({f: 'js/transfers/meths.js', n: 'dl_meths', j: 1, w: 3});
+    jsl.push({f: 'js/transfers/upload2.js', n: 'upload_js', j: 1, w: 2});
+    jsl.push({f: 'js/transfers/reader.js', n: 'upload_reader_js', j: 1, w: 2});
+    jsl.push({f: 'js/transfers/zip64.js', n: 'zip_js', j: 1});
 
     // Everything else...
-    jsl.push({f:'index.js', n: 'index', j:1,w:4});
+    jsl.push({f: 'index.js', n: 'index', j: 1, w: 4});
 
+    // TODO 页面
     if (is_mobile) {
-        jsl.push({f:'html/top-mobile.html', n: 'top-mobile', j:0});
+        jsl.push({f: 'html/top-mobile.html', n: 'top-mobile', j: 0});
     }
     else {
-        jsl.push({f:'html/top.html', n: 'top', j:0});
+        jsl.push({f: 'html/top.html', n: 'top', j: 0});
     }
 
-    jsl.push({f:'html/transferwidget.html', n: 'transferwidget', j:0});
-    jsl.push({f:'js/filetypes.js', n: 'filetypes_js', j:1});
-    jsl.push({f:'js/fm/removenode.js', n: 'fm_removenode_js', j: 1});
-    jsl.push({f:'js/fm/ufssizecache.js', n: 'ufssizecache_js', j:1});
+    jsl.push({f: 'html/transferwidget.html', n: 'transferwidget', j: 0});
+    jsl.push({f: 'js/filetypes.js', n: 'filetypes_js', j: 1});
+    jsl.push({f: 'js/fm/removenode.js', n: 'fm_removenode_js', j: 1});
+    jsl.push({f: 'js/fm/ufssizecache.js', n: 'ufssizecache_js', j: 1});
 
     // Pro pages Step 1 (Pro plan) and Step 2 (Pro payment)
-    jsl.push({f:'html/proplan.html', n: 'proplan', j:0});
-    jsl.push({f:'html/propay.html', n: 'propay', j:0});
-    jsl.push({f:'html/js/pro.js', n: 'pro_js', j:1});
-    jsl.push({f:'html/js/proplan.js', n: 'proplan_js', j:1});
-    jsl.push({f:'html/js/propay.js', n: 'propay_js', j:1});
-    jsl.push({f:'html/js/propay-dialogs.js', n: 'propay_js', j:1});
-    jsl.push({f:'js/states-countries.js', n: 'states_countries_js', j:1});
+    jsl.push({f: 'html/proplan.html', n: 'proplan', j: 0});
+    jsl.push({f: 'html/propay.html', n: 'propay', j: 0});
+    jsl.push({f: 'html/js/pro.js', n: 'pro_js', j: 1});
+    jsl.push({f: 'html/js/proplan.js', n: 'proplan_js', j: 1});
+    jsl.push({f: 'html/js/propay.js', n: 'propay_js', j: 1});
+    jsl.push({f: 'html/js/propay-dialogs.js', n: 'propay_js', j: 1});
+    jsl.push({f: 'js/states-countries.js', n: 'states_countries_js', j: 1});
 
-    jsl.push({f:'js/ui/miniui.js', n: 'miniui_js', j:1});
-    jsl.push({f:'js/fm/achievements.js', n: 'achievements_js', j:1, w:5});
-    jsl.push({f:'js/fm/fileversioning.js', n: 'fm_fileversioning_js', j:1});
+    jsl.push({f: 'js/ui/miniui.js', n: 'miniui_js', j: 1});
+    jsl.push({f: 'js/fm/achievements.js', n: 'achievements_js', j: 1, w: 5});
+    jsl.push({f: 'js/fm/fileversioning.js', n: 'fm_fileversioning_js', j: 1});
 
     if (!is_mobile) {
-        jsl.push({f:'css/style.css', n: 'style_css', j:2, w:30, c:1, d:1, cache:1});
-        jsl.push({f:'js/vendor/megalist.js', n: 'megalist_js', j:1, w:5});
-        jsl.push({f:'js/fm/quickfinder.js', n: 'fm_quickfinder_js', j:1, w:1});
-        jsl.push({f:'js/fm/selectionmanager.js', n: 'fm_selectionmanager_js', j:1, w:1});
-        jsl.push({f:'js/fm.js', n: 'fm_js', j:1, w:12});
-        jsl.push({f:'js/fm/dashboard.js', n: 'fmdashboard_js', j:1, w:5});
-        jsl.push({f:'js/fm/account.js', n: 'fm_account_js', j:1});
-        jsl.push({f:'js/fm/account-change-password.js', n: 'fm_account_change_password_js', j:1});
-        jsl.push({f:'js/fm/account-change-email.js', n: 'fm_account_change_email_js', j:1});
-        jsl.push({f:'js/fm/dialogs.js', n: 'fm_dialogs_js', j:1});
-        jsl.push({f:'js/fm/fileconflict.js', n: 'fm_fileconflict_js', j:1});
-        jsl.push({f:'js/fm/properties.js', n: 'fm_properties_js', j:1});
-        jsl.push({f:'js/ui/imagesViewer.js', n: 'imagesViewer_js', j:1});
-        jsl.push({f:'js/ui/miniui.js', n: 'miniui_js', j:1});
-        jsl.push({f:'html/key.html', n: 'key', j:0});
-        jsl.push({f:'html/login.html', n: 'login', j:0});
-        jsl.push({f:'html/fm.html', n: 'fm', j:0, w:3});
-        jsl.push({f:'html/top-login.html', n: 'top-login', j:0});
-        jsl.push({f:'js/notify.js', n: 'notify_js', j:1});
-        jsl.push({f:'js/popunda.js', n: 'popunda_js', j:1});
-        jsl.push({f:'css/download.css', n: 'download_css', j:2,w:5,c:1,d:1,cache:1});
-        jsl.push({f:'css/user-card.css', n: 'user_card_css', j:2, w:5, c:1, d:1, cache:1});
-        jsl.push({f:'css/fm-lists.css', n: 'fm_lists_css', j:2,w:5,c:1,d:1,cache:1});
-        jsl.push({f:'html/onboarding.html', n: 'onboarding', j:0,w:2});
+        jsl.push({f: 'css/style.css', n: 'style_css', j: 2, w: 30, c: 1, d: 1, cache: 1});
+        jsl.push({f: 'js/vendor/megalist.js', n: 'megalist_js', j: 1, w: 5});
+        jsl.push({f: 'js/fm/quickfinder.js', n: 'fm_quickfinder_js', j: 1, w: 1});
+        jsl.push({f: 'js/fm/selectionmanager.js', n: 'fm_selectionmanager_js', j: 1, w: 1});
+        jsl.push({f: 'js/fm.js', n: 'fm_js', j: 1, w: 12});
+        jsl.push({f: 'js/fm/dashboard.js', n: 'fmdashboard_js', j: 1, w: 5});
+        jsl.push({f: 'js/fm/account.js', n: 'fm_account_js', j: 1});
+        jsl.push({f: 'js/fm/account-change-password.js', n: 'fm_account_change_password_js', j: 1});
+        jsl.push({f: 'js/fm/account-change-email.js', n: 'fm_account_change_email_js', j: 1});
+        jsl.push({f: 'js/fm/dialogs.js', n: 'fm_dialogs_js', j: 1});
+        jsl.push({f: 'js/fm/fileconflict.js', n: 'fm_fileconflict_js', j: 1});
+        jsl.push({f: 'js/fm/properties.js', n: 'fm_properties_js', j: 1});
+        jsl.push({f: 'js/ui/imagesViewer.js', n: 'imagesViewer_js', j: 1});
+        jsl.push({f: 'js/ui/miniui.js', n: 'miniui_js', j: 1});
+        jsl.push({f: 'html/key.html', n: 'key', j: 0});
+        jsl.push({f: 'html/login.html', n: 'login', j: 0});
+        jsl.push({f: 'html/fm.html', n: 'fm', j: 0, w: 3});
+        jsl.push({f: 'html/top-login.html', n: 'top-login', j: 0});
+        jsl.push({f: 'js/notify.js', n: 'notify_js', j: 1});
+        jsl.push({f: 'js/popunda.js', n: 'popunda_js', j: 1});
+        jsl.push({f: 'css/download.css', n: 'download_css', j: 2, w: 5, c: 1, d: 1, cache: 1});
+        jsl.push({f: 'css/user-card.css', n: 'user_card_css', j: 2, w: 5, c: 1, d: 1, cache: 1});
+        jsl.push({f: 'css/fm-lists.css', n: 'fm_lists_css', j: 2, w: 5, c: 1, d: 1, cache: 1});
+        jsl.push({f: 'html/onboarding.html', n: 'onboarding', j: 0, w: 2});
 
-        jsl.push({f:'css/buttons.css', n: 'buttons_css', j:2,w:5,c:1,d:1,cache:1});
-        jsl.push({f:'css/dropdowns.css', n: 'dropdowns_css', j:2,w:5,c:1,d:1,cache:1});
-        jsl.push({f:'css/dialogs.css', n: 'dialogs_css', j:2,w:5,c:1,d:1,cache:1});
-        jsl.push({f:'css/media-viewer.css', n: 'media_viewer_css', j:2,w:5,c:1,d:1,cache:1});
-        jsl.push({f:'css/popups.css', n: 'popups_css', j:2,w:5,c:1,d:1,cache:1});
-        jsl.push({f:'css/toast.css', n: 'toast_css', j:2,w:5,c:1,d:1,cache:1});
-        jsl.push({f:'css/data-blocks-view.css', n: 'data_blocks_view_css', j:2,w:5,c:1,d:1,cache:1});
-        jsl.push({f:'css/help2.css', n: 'help_css', j:2,w:5,c:1,d:1,cache:1});
+        jsl.push({f: 'css/buttons.css', n: 'buttons_css', j: 2, w: 5, c: 1, d: 1, cache: 1});
+        jsl.push({f: 'css/dropdowns.css', n: 'dropdowns_css', j: 2, w: 5, c: 1, d: 1, cache: 1});
+        jsl.push({f: 'css/dialogs.css', n: 'dialogs_css', j: 2, w: 5, c: 1, d: 1, cache: 1});
+        jsl.push({f: 'css/media-viewer.css', n: 'media_viewer_css', j: 2, w: 5, c: 1, d: 1, cache: 1});
+        jsl.push({f: 'css/popups.css', n: 'popups_css', j: 2, w: 5, c: 1, d: 1, cache: 1});
+        jsl.push({f: 'css/toast.css', n: 'toast_css', j: 2, w: 5, c: 1, d: 1, cache: 1});
+        jsl.push({f: 'css/data-blocks-view.css', n: 'data_blocks_view_css', j: 2, w: 5, c: 1, d: 1, cache: 1});
+        jsl.push({f: 'css/help2.css', n: 'help_css', j: 2, w: 5, c: 1, d: 1, cache: 1});
 
-        jsl.push({f:'css/perfect-scrollbar.css', n: 'vendor_ps_css', j:2,w:5,c:1,d:1,cache:1});
-        jsl.push({f:'css/onboarding.css', n: 'onboarding_css', j:2,w:5,c:1,d:1,cache:1});
-        jsl.push({f:'css/retina-images.css', n: 'retina_images_css', j: 2, w: 5, c: 1, d: 1, cache: 1});
-        jsl.push({f:'css/media-print.css', n: 'media_print_css', j:2,w:5,c:1,d:1,cache:1});
+        jsl.push({f: 'css/perfect-scrollbar.css', n: 'vendor_ps_css', j: 2, w: 5, c: 1, d: 1, cache: 1});
+        jsl.push({f: 'css/onboarding.css', n: 'onboarding_css', j: 2, w: 5, c: 1, d: 1, cache: 1});
+        jsl.push({f: 'css/retina-images.css', n: 'retina_images_css', j: 2, w: 5, c: 1, d: 1, cache: 1});
+        jsl.push({f: 'css/media-print.css', n: 'media_print_css', j: 2, w: 5, c: 1, d: 1, cache: 1});
 
-        jsl.push({f:'js/vendor/avatar.js', n: 'avatar_js', j:1, w:3});
-        jsl.push({f:'js/states-countries.js', n: 'states_countries_js', j:1});
-        jsl.push({f:'html/dialogs.html', n: 'dialogs', j:0,w:2});
-        jsl.push({f:'js/vendor/int64.js', n: 'int64_js', j:1});
+        jsl.push({f: 'js/vendor/avatar.js', n: 'avatar_js', j: 1, w: 3});
+        jsl.push({f: 'js/states-countries.js', n: 'states_countries_js', j: 1});
+        jsl.push({f: 'html/dialogs.html', n: 'dialogs', j: 0, w: 2});
+        jsl.push({f: 'js/vendor/int64.js', n: 'int64_js', j: 1});
     } // !is_mobile
 
     // do not change the order...
-    jsl.push({f:'js/fm/filemanager.js', n: 'filemanager_js', j: 1, w: 5});
-    jsl.push({f:'js/fm/utils.js', n: 'fm_utils_js', j: 1});
-    jsl.push({f:'js/fm/megadata.js', n: 'fm_megadata_js', j: 1});
-    jsl.push({f:'js/fm/megadata/account.js', n: 'fm_megadata_account_js', j: 1});
-    jsl.push({f:'js/fm/megadata/avatars.js', n: 'fm_megadata_avatars_js', j: 1});
-    jsl.push({f:'js/fm/megadata/contacts.js', n: 'fm_megadata_contacts_js', j: 1});
-    jsl.push({f:'js/fm/megadata/filters.js', n: 'fm_megadata_filters_js', j: 1});
-    jsl.push({f:'js/fm/megadata/inbox.js', n: 'fm_megadata_inbox_js', j: 1});
-    jsl.push({f:'js/fm/megadata/menus.js', n: 'fm_megadata_menus_js', j: 1});
-    jsl.push({f:'js/fm/megadata/nodes.js', n: 'fm_megadata_nodes_js', j: 1});
-    jsl.push({f:'js/fm/megadata/openfolder.js', n: 'fm_megadata_openfolder_js', j: 1});
-    jsl.push({f:'js/fm/megadata/render.js', n: 'fm_megadata_render_js', j: 1});
-    jsl.push({f:'js/fm/megadata/reset.js', n: 'fm_megadata_reset_js', j: 1});
-    jsl.push({f:'js/fm/megadata/sort.js', n: 'fm_megadata_sort_js', j: 1});
-    jsl.push({f:'js/fm/megadata/transfers.js', n: 'fm_megadata_transfers_js', j: 1});
-    jsl.push({f:'js/fm/megadata/tree.js', n: 'fm_megadata_tree_js', j: 1});
-    jsl.push({f:'html/js/megasync.js', n: 'megasync_js', j: 1});
-    jsl.push({f:'js/fm/linkinfohelper.js', n: 'fm_linkinfohelper_js', j: 1});
+    jsl.push({f: 'js/fm/filemanager.js', n: 'filemanager_js', j: 1, w: 5});
+    jsl.push({f: 'js/fm/utils.js', n: 'fm_utils_js', j: 1});
+    jsl.push({f: 'js/fm/megadata.js', n: 'fm_megadata_js', j: 1});
+    jsl.push({f: 'js/fm/megadata/account.js', n: 'fm_megadata_account_js', j: 1});
+    jsl.push({f: 'js/fm/megadata/avatars.js', n: 'fm_megadata_avatars_js', j: 1});
+    jsl.push({f: 'js/fm/megadata/contacts.js', n: 'fm_megadata_contacts_js', j: 1});
+    jsl.push({f: 'js/fm/megadata/filters.js', n: 'fm_megadata_filters_js', j: 1});
+    jsl.push({f: 'js/fm/megadata/inbox.js', n: 'fm_megadata_inbox_js', j: 1});
+    jsl.push({f: 'js/fm/megadata/menus.js', n: 'fm_megadata_menus_js', j: 1});
+    jsl.push({f: 'js/fm/megadata/nodes.js', n: 'fm_megadata_nodes_js', j: 1});
+    jsl.push({f: 'js/fm/megadata/openfolder.js', n: 'fm_megadata_openfolder_js', j: 1});
+    jsl.push({f: 'js/fm/megadata/render.js', n: 'fm_megadata_render_js', j: 1});
+    jsl.push({f: 'js/fm/megadata/reset.js', n: 'fm_megadata_reset_js', j: 1});
+    jsl.push({f: 'js/fm/megadata/sort.js', n: 'fm_megadata_sort_js', j: 1});
+    jsl.push({f: 'js/fm/megadata/transfers.js', n: 'fm_megadata_transfers_js', j: 1});
+    jsl.push({f: 'js/fm/megadata/tree.js', n: 'fm_megadata_tree_js', j: 1});
+    jsl.push({f: 'html/js/megasync.js', n: 'megasync_js', j: 1});
+    jsl.push({f: 'js/fm/linkinfohelper.js', n: 'fm_linkinfohelper_js', j: 1});
 
     if (localStorage.makeCache) {
-        jsl.push({f:'makecache.js', n: 'makecache', j:1});
+        jsl.push({f: 'makecache.js', n: 'makecache', j: 1});
     }
 
     if (localStorage.enableDevtools) {
-        jsl.push({f:'dont-deploy/transcripter/exporter.js', n: 'tse_js', j:1});
+        jsl.push({f: 'dont-deploy/transcripter/exporter.js', n: 'tse_js', j: 1});
     }
 
     if (lang === 'ar') {
-        jsl.push({f:'css/lang_ar.css', n: 'lang_arabic_css', j: 2, w: 30, c: 1, d: 1, m: 1});
+        jsl.push({f: 'css/lang_ar.css', n: 'lang_arabic_css', j: 2, w: 30, c: 1, d: 1, m: 1});
     }
 
     if (lang === 'fa') {
-        jsl.push({f:'css/lang_ar.css', n: 'lang_farsi_css', j: 2, w: 30, c: 1, d: 1, m: 1});
+        jsl.push({f: 'css/lang_ar.css', n: 'lang_farsi_css', j: 2, w: 30, c: 1, d: 1, m: 1});
     }
 
     if (lang === 'th') {
-        jsl.push({f:'css/lang_th.css', n: 'lang_thai_css', j: 2, w: 30, c: 1, d: 1, m: 1});
+        jsl.push({f: 'css/lang_th.css', n: 'lang_thai_css', j: 2, w: 30, c: 1, d: 1, m: 1});
     }
 
     // Load files common to all mobile pages
     if (is_mobile) {
-        jsl.push({f:'css/mobile.css', n: 'mobile_css', j: 2, w: 30, c: 1, d: 1, m: 1});
-        jsl.push({f:'css/mobile-help.css', n: 'mobile_css', j: 2, w: 30, c: 1, d: 1, m: 1});
-        jsl.push({f:'css/toast.css', n: 'toast_css', j: 2, w: 5, c: 1, d: 1, cache: 1});
-        jsl.push({f:'html/mobile.html', n: 'mobile', j: 0, w: 1});
-        jsl.push({f:'js/vendor/jquery.mobile.js', n: 'jquery_mobile_js', j: 1, w: 5});
-        jsl.push({f:'js/mobile/mobile.js', n: 'mobile_js', j: 1, w: 1});
-        jsl.push({f:'js/mobile/mobile.account.js', n: 'mobile_account_js', j: 1, w: 1});
-        jsl.push({f:'js/mobile/mobile.account.cancel.js', n: 'mobile_account__cancel_js', j: 1, w: 1});
-        jsl.push({f:'js/mobile/mobile.achieve.js', n: 'mobile_achieve_js', j: 1, w: 1});
-        jsl.push({f:'js/mobile/mobile.achieve.how-it-works.js', n: 'mobile_achieve_how_it_works_js', j: 1, w: 1});
-        jsl.push({f:'js/mobile/mobile.achieve.invites.js', n: 'mobile_achieve_invites_js', j: 1, w: 1});
-        jsl.push({f:'js/mobile/mobile.achieve.referrals.js', n: 'mobile_achieve_referrals_js', j: 1, w: 1});
-        jsl.push({f:'js/mobile/mobile.backup.js', n: 'mobile_backup_js', j: 1, w: 1});
-        jsl.push({f:'js/mobile/mobile.cloud.js', n: 'mobile_cloud_js', j: 1, w: 1});
-        jsl.push({f:'js/mobile/mobile.cloud.action-bar.js', n: 'mobile_cloud_action_bar_js', j: 1, w: 1});
-        jsl.push({f:'js/mobile/mobile.cloud.context-menu.js', n: 'mobile_cloud_context_menu_js', j: 1, w: 1});
-        jsl.push({f:'js/mobile/mobile.create-folder-overlay.js', n: 'mobile_create_folder_overlay_js', j: 1, w: 1});
-        jsl.push({f:'js/mobile/mobile.decryption-key-overlay.js', n: 'mobile_mobile_dec_key_overlay_js', j: 1, w: 1});
-        jsl.push({f:'js/mobile/mobile.decryption-password-overlay.js', n: 'mobile_dec_pass_overlay_js', j: 1, w: 1});
-        jsl.push({f:'js/mobile/mobile.delete-overlay.js', n: 'mobile_delete_overlay_js', j: 1, w: 1});
-        jsl.push({f:'js/mobile/mobile.download-overlay.js', n: 'mobile_download_overlay_js', j: 1, w: 1});
-        jsl.push({f:'js/mobile/mobile.language-menu.js', n: 'mobile_language_menu_js', j: 1, w: 1});
-        jsl.push({f:'js/mobile/mobile.link-overlay.js', n: 'mobile_link_overlay_js', j: 1, w: 1});
-        jsl.push({f:'js/mobile/mobile.message-overlay.js', n: 'mobile_message_overlay_js', j: 1, w: 1});
-        jsl.push({f:'js/mobile/mobile.not-found-overlay.js', n: 'mobile_not_found_overlay_js', j: 1, w: 1});
-        jsl.push({f:'js/mobile/mobile.pro-signup-prompt.js', n: 'mobile_pro_signup_prompt_js', j: 1, w: 1});
-        jsl.push({f:'js/mobile/mobile.propay.js', n: 'mobile_propay_js', j: 1, w: 1});
-        jsl.push({f:'js/mobile/mobile.recovery.js', n: 'mobile_rec_js', j: 1, w: 1});
-        jsl.push({f:'js/mobile/mobile.recovery.send-email.js', n: 'mobile_rec_send_email_js', j: 1, w: 1});
-        jsl.push({f:'js/mobile/mobile.recovery.from-email-link.js', n: 'mobile_rec_from_email_link_js', j: 1, w: 1});
-        jsl.push({f:'js/mobile/mobile.recovery.enter-key.js', n: 'mobile_rec_enter_key_js', j: 1, w: 1});
-        jsl.push({f:'js/mobile/mobile.recovery.change-password.js', n: 'mobile_rec_change_password_js', j: 1, w: 1});
-        jsl.push({f:'js/mobile/mobile.register.js', n: 'mobile_register_js', j: 1, w: 1});
-        jsl.push({f:'js/mobile/mobile.signin.js', n: 'mobile_signin_js', j: 1, w: 1});
-        jsl.push({f:'js/mobile/mobile.slideshow.js', n: 'mobile_slideshow_js', j: 1, w: 1});
-        jsl.push({f:'js/mobile/mobile.support.js', n: 'mobile_support_js', j: 1, w: 1});
-        jsl.push({f:'js/mobile/mobile.terms.js', n: 'mobile_terms_js', j: 1, w: 1});
-        jsl.push({f:'js/mobile/mobile.upload-overlay.js', n: 'mobile_upload_overlay_js', j: 1, w: 1});
-        jsl.push({f:'js/mobile/mobile.megadrop.js', n: 'mobile_megadrop_js', j: 1, w: 1});
-        jsl.push({f:'js/mobile/mobile.contact-link.js', n: 'mobile_contactlink_js', j: 1, w: 1});
-        jsl.push({f:'js/mobile/mobile.twofactor.js', n: 'mobile_twofactor_js', j: 1, w: 1});
-        jsl.push({f:'js/mobile/mobile.twofactor.intro.js', n: 'mobile_twofactor_info_js', j: 1, w: 1});
-        jsl.push({f:'js/mobile/mobile.twofactor.setup.js', n: 'mobile_twofactor_setup_js', j: 1, w: 1});
-        jsl.push({f:'js/mobile/mobile.twofactor.verify-setup.js', n: 'mobile_twofactor_verify_setup_js', j: 1, w: 1});
-        jsl.push({f:'js/mobile/mobile.twofactor.enabled.js', n: 'mobile_twofactor_enabled_js', j: 1, w: 1});
-        jsl.push({f:'js/mobile/mobile.twofactor.verify-disable.js', n: 'mobile_twofactor_verify_disable_js', j: 1, w: 1});
-        jsl.push({f:'js/mobile/mobile.twofactor.disabled.js', n: 'mobile_twofactor_disabled_js', j: 1, w: 1});
-        jsl.push({f:'js/mobile/mobile.twofactor.verify-login.js', n: 'mobile_twofactor_verify_login_js', j: 1, w: 1});
-        jsl.push({f:'js/mobile/mobile.twofactor.verify-action.js', n: 'mobile_twofactor_verify_action_js', j: 1, w: 1});
+        jsl.push({f: 'css/mobile.css', n: 'mobile_css', j: 2, w: 30, c: 1, d: 1, m: 1});
+        jsl.push({f: 'css/mobile-help.css', n: 'mobile_css', j: 2, w: 30, c: 1, d: 1, m: 1});
+        jsl.push({f: 'css/toast.css', n: 'toast_css', j: 2, w: 5, c: 1, d: 1, cache: 1});
+        jsl.push({f: 'html/mobile.html', n: 'mobile', j: 0, w: 1});
+        jsl.push({f: 'js/vendor/jquery.mobile.js', n: 'jquery_mobile_js', j: 1, w: 5});
+        jsl.push({f: 'js/mobile/mobile.js', n: 'mobile_js', j: 1, w: 1});
+        jsl.push({f: 'js/mobile/mobile.account.js', n: 'mobile_account_js', j: 1, w: 1});
+        jsl.push({f: 'js/mobile/mobile.account.cancel.js', n: 'mobile_account__cancel_js', j: 1, w: 1});
+        jsl.push({f: 'js/mobile/mobile.achieve.js', n: 'mobile_achieve_js', j: 1, w: 1});
+        jsl.push({f: 'js/mobile/mobile.achieve.how-it-works.js', n: 'mobile_achieve_how_it_works_js', j: 1, w: 1});
+        jsl.push({f: 'js/mobile/mobile.achieve.invites.js', n: 'mobile_achieve_invites_js', j: 1, w: 1});
+        jsl.push({f: 'js/mobile/mobile.achieve.referrals.js', n: 'mobile_achieve_referrals_js', j: 1, w: 1});
+        jsl.push({f: 'js/mobile/mobile.backup.js', n: 'mobile_backup_js', j: 1, w: 1});
+        jsl.push({f: 'js/mobile/mobile.cloud.js', n: 'mobile_cloud_js', j: 1, w: 1});
+        jsl.push({f: 'js/mobile/mobile.cloud.action-bar.js', n: 'mobile_cloud_action_bar_js', j: 1, w: 1});
+        jsl.push({f: 'js/mobile/mobile.cloud.context-menu.js', n: 'mobile_cloud_context_menu_js', j: 1, w: 1});
+        jsl.push({f: 'js/mobile/mobile.create-folder-overlay.js', n: 'mobile_create_folder_overlay_js', j: 1, w: 1});
+        jsl.push({f: 'js/mobile/mobile.decryption-key-overlay.js', n: 'mobile_mobile_dec_key_overlay_js', j: 1, w: 1});
+        jsl.push({f: 'js/mobile/mobile.decryption-password-overlay.js', n: 'mobile_dec_pass_overlay_js', j: 1, w: 1});
+        jsl.push({f: 'js/mobile/mobile.delete-overlay.js', n: 'mobile_delete_overlay_js', j: 1, w: 1});
+        jsl.push({f: 'js/mobile/mobile.download-overlay.js', n: 'mobile_download_overlay_js', j: 1, w: 1});
+        jsl.push({f: 'js/mobile/mobile.language-menu.js', n: 'mobile_language_menu_js', j: 1, w: 1});
+        jsl.push({f: 'js/mobile/mobile.link-overlay.js', n: 'mobile_link_overlay_js', j: 1, w: 1});
+        jsl.push({f: 'js/mobile/mobile.message-overlay.js', n: 'mobile_message_overlay_js', j: 1, w: 1});
+        jsl.push({f: 'js/mobile/mobile.not-found-overlay.js', n: 'mobile_not_found_overlay_js', j: 1, w: 1});
+        jsl.push({f: 'js/mobile/mobile.pro-signup-prompt.js', n: 'mobile_pro_signup_prompt_js', j: 1, w: 1});
+        jsl.push({f: 'js/mobile/mobile.propay.js', n: 'mobile_propay_js', j: 1, w: 1});
+        jsl.push({f: 'js/mobile/mobile.recovery.js', n: 'mobile_rec_js', j: 1, w: 1});
+        jsl.push({f: 'js/mobile/mobile.recovery.send-email.js', n: 'mobile_rec_send_email_js', j: 1, w: 1});
+        jsl.push({f: 'js/mobile/mobile.recovery.from-email-link.js', n: 'mobile_rec_from_email_link_js', j: 1, w: 1});
+        jsl.push({f: 'js/mobile/mobile.recovery.enter-key.js', n: 'mobile_rec_enter_key_js', j: 1, w: 1});
+        jsl.push({f: 'js/mobile/mobile.recovery.change-password.js', n: 'mobile_rec_change_password_js', j: 1, w: 1});
+        jsl.push({f: 'js/mobile/mobile.register.js', n: 'mobile_register_js', j: 1, w: 1});
+        jsl.push({f: 'js/mobile/mobile.signin.js', n: 'mobile_signin_js', j: 1, w: 1});
+        jsl.push({f: 'js/mobile/mobile.slideshow.js', n: 'mobile_slideshow_js', j: 1, w: 1});
+        jsl.push({f: 'js/mobile/mobile.support.js', n: 'mobile_support_js', j: 1, w: 1});
+        jsl.push({f: 'js/mobile/mobile.terms.js', n: 'mobile_terms_js', j: 1, w: 1});
+        jsl.push({f: 'js/mobile/mobile.upload-overlay.js', n: 'mobile_upload_overlay_js', j: 1, w: 1});
+        jsl.push({f: 'js/mobile/mobile.megadrop.js', n: 'mobile_megadrop_js', j: 1, w: 1});
+        jsl.push({f: 'js/mobile/mobile.contact-link.js', n: 'mobile_contactlink_js', j: 1, w: 1});
+        jsl.push({f: 'js/mobile/mobile.twofactor.js', n: 'mobile_twofactor_js', j: 1, w: 1});
+        jsl.push({f: 'js/mobile/mobile.twofactor.intro.js', n: 'mobile_twofactor_info_js', j: 1, w: 1});
+        jsl.push({f: 'js/mobile/mobile.twofactor.setup.js', n: 'mobile_twofactor_setup_js', j: 1, w: 1});
+        jsl.push({f: 'js/mobile/mobile.twofactor.verify-setup.js', n: 'mobile_twofactor_verify_setup_js', j: 1, w: 1});
+        jsl.push({f: 'js/mobile/mobile.twofactor.enabled.js', n: 'mobile_twofactor_enabled_js', j: 1, w: 1});
+        jsl.push({
+            f: 'js/mobile/mobile.twofactor.verify-disable.js',
+            n: 'mobile_twofactor_verify_disable_js',
+            j: 1,
+            w: 1
+        });
+        jsl.push({f: 'js/mobile/mobile.twofactor.disabled.js', n: 'mobile_twofactor_disabled_js', j: 1, w: 1});
+        jsl.push({f: 'js/mobile/mobile.twofactor.verify-login.js', n: 'mobile_twofactor_verify_login_js', j: 1, w: 1});
+        jsl.push({
+            f: 'js/mobile/mobile.twofactor.verify-action.js',
+            n: 'mobile_twofactor_verify_action_js',
+            j: 1,
+            w: 1
+        });
     }
 
     // We need to keep a consistent order in loaded resources, so that if users
     // send us logs we won't get different line numbers on stack-traces from
     // different browsers. Hence, do NOT add more jsl entries after this block,
     // unless they're optional (such as polyfills) or third-party resources.
-
+// TODO：embed= false
     if (is_embed) {
         jsl = [{f: langFilepath, n: 'lang', j: 3}];
-        jsl.push({f:'sjcl.js', n: 'sjcl_js', j: 1});
-        jsl.push({f:'nodedec.js', n: 'nodedec_js', j: 1});
-        jsl.push({f:'js/vendor/jquery-2.2.1.js', n: 'jquery', j: 1, w: 10});
-        jsl.push({f:'js/vendor/jquery.fullscreen.js', n: 'jquery_fullscreen', j:1, w:10});
-        jsl.push({f:'js/jquery.misc.js', n: 'jquerymisc_js', j: 1});
-        jsl.push({f:'html/js/embedplayer.js', n: 'embedplayer_js', j: 1, w: 4});
+        jsl.push({f: 'sjcl.js', n: 'sjcl_js', j: 1});
+        jsl.push({f: 'nodedec.js', n: 'nodedec_js', j: 1});
+        jsl.push({f: 'js/vendor/jquery-2.2.1.js', n: 'jquery', j: 1, w: 10});
+        jsl.push({f: 'js/vendor/jquery.fullscreen.js', n: 'jquery_fullscreen', j: 1, w: 10});
+        jsl.push({f: 'js/jquery.misc.js', n: 'jquerymisc_js', j: 1});
+        jsl.push({f: 'html/js/embedplayer.js', n: 'embedplayer_js', j: 1, w: 4});
 
-        jsl.push({f:'js/utils/polyfills.js', n: 'js_utils_polyfills_js', j: 1});
-        jsl.push({f:'js/utils/browser.js', n: 'js_utils_browser_js', j: 1});
-        jsl.push({f:'js/utils/clipboard.js', n: 'js_utils_clipboard_js', j: 1});
-        jsl.push({f:'js/utils/conv.js', n: 'js_utils_conv_js', j: 1});
-        jsl.push({f:'js/utils/dom.js', n: 'js_utils_dom_js', j: 1});
-        jsl.push({f:'js/utils/events.js', n: 'js_utils_events_js', j: 1});
-        jsl.push({f:'js/utils/locale.js', n: 'js_utils_locale_js', j: 1});
-        jsl.push({f:'js/utils/media.js', n: 'js_utils_pictools_js', j: 1});
-        jsl.push({f:'js/utils/network.js', n: 'js_utils_network_js', j: 1});
-        jsl.push({f:'js/utils/timers.js', n: 'js_utils_timers_js', j: 1});
-        jsl.push({f:'js/utils/watchdog.js', n: 'js_utils_watchdog_js', j: 1});
-        jsl.push({f:'js/utils/workers.js', n: 'js_utils_workers_js', j: 1});
+        jsl.push({f: 'js/utils/polyfills.js', n: 'js_utils_polyfills_js', j: 1});
+        jsl.push({f: 'js/utils/browser.js', n: 'js_utils_browser_js', j: 1});
+        jsl.push({f: 'js/utils/clipboard.js', n: 'js_utils_clipboard_js', j: 1});
+        jsl.push({f: 'js/utils/conv.js', n: 'js_utils_conv_js', j: 1});
+        jsl.push({f: 'js/utils/dom.js', n: 'js_utils_dom_js', j: 1});
+        jsl.push({f: 'js/utils/events.js', n: 'js_utils_events_js', j: 1});
+        jsl.push({f: 'js/utils/locale.js', n: 'js_utils_locale_js', j: 1});
+        jsl.push({f: 'js/utils/media.js', n: 'js_utils_pictools_js', j: 1});
+        jsl.push({f: 'js/utils/network.js', n: 'js_utils_network_js', j: 1});
+        jsl.push({f: 'js/utils/timers.js', n: 'js_utils_timers_js', j: 1});
+        jsl.push({f: 'js/utils/watchdog.js', n: 'js_utils_watchdog_js', j: 1});
+        jsl.push({f: 'js/utils/workers.js', n: 'js_utils_workers_js', j: 1});
 
-        jsl.push({f:'js/crypto.js', n: 'crypto_js', j: 1, w: 5});
-        jsl.push({f:'js/account.js', n: 'user_js', j: 1});
+        jsl.push({f: 'js/crypto.js', n: 'crypto_js', j: 1, w: 5});
+        jsl.push({f: 'js/account.js', n: 'user_js', j: 1});
 
-        jsl.push({f:'js/transfers/queue.js', n: 'queue', j: 1, w: 4});
-        jsl.push({f:'js/transfers/decrypter.js', n: 'dl_downloader', j: 1, w: 3});
-        jsl.push({f:'js/vendor/videostream.js', n: 'videostream', j: 1, w: 3});
+        jsl.push({f: 'js/transfers/queue.js', n: 'queue', j: 1, w: 4});
+        jsl.push({f: 'js/transfers/decrypter.js', n: 'dl_downloader', j: 1, w: 3});
+        jsl.push({f: 'js/vendor/videostream.js', n: 'videostream', j: 1, w: 3});
 
-        jsl.push({f:'html/embedplayer.html', n: 'index', j: 0});
-        jsl.push({f:'css/embedplayer.css', n: 'embedplayer_css', j: 2, w: 5});
+        jsl.push({f: 'html/embedplayer.html', n: 'index', j: 0});
+        jsl.push({f: 'css/embedplayer.css', n: 'embedplayer_css', j: 2, w: 5});
     }
 
+// TODO：is_drop= false
     if (is_drop) {
         u_checked = true;
         jsl = [{f: langFilepath, n: 'lang', j: 3}];
-        jsl.push({f:'html/js/embeddrop.js', n: 'embeddrop_js', j: 1, w: 4});
-        jsl.push({f:'css/embeddrop.css', n: 'embeddrop_css', j: 2, w: 5});
+        jsl.push({f: 'html/js/embeddrop.js', n: 'embeddrop_js', j: 1, w: 4});
+        jsl.push({f: 'css/embeddrop.css', n: 'embeddrop_css', j: 2, w: 5});
     }
     else {
-        jsl.push({f:'js/jquery.protect.js', n: 'jqueryprotect_js', j: 1});
-        jsl.push({f:'js/vendor/asmcrypto.js', n: 'asmcrypto_js', j: 1, w: 5});
+        jsl.push({f: 'js/jquery.protect.js', n: 'jqueryprotect_js', j: 1});
+        jsl.push({f: 'js/vendor/asmcrypto.js', n: 'asmcrypto_js', j: 1, w: 5});
 
         if (typeof Number.isNaN !== 'function' || typeof Set === 'undefined' || !Object.assign) {
-            jsl.push({f:'js/vendor/es6-shim.js', n: 'es6shim_js', j: 1});
+            jsl.push({f: 'js/vendor/es6-shim.js', n: 'es6shim_js', j: 1});
         }
     }
 
     // If the TextEncoder is not supported natively (IE, Edge) then load the polyfill
     if (typeof TextEncoder !== 'function') {
-        jsl.push({f:'js/vendor/encoding.js', n: 'encoding_js', j:1});
+        jsl.push({f: 'js/vendor/encoding.js', n: 'encoding_js', j: 1});
     }
 
     // only used on beta
     if (onBetaW) {
-        jsl.push({f:'js/betacrashes.js', n: 'betacrashes_js', j: 1});
+        jsl.push({f: 'js/betacrashes.js', n: 'betacrashes_js', j: 1});
     }
 
     if (is_chrome_firefox && parseInt(Services.appinfo.version) > 27) {
         is_chrome_firefox |= 4;
-        jsl.push({f:'js/transfers/meths/firefox-extension.js', n: 'dl_firefox', j: 1, w: 3});
+        jsl.push({f: 'js/transfers/meths/firefox-extension.js', n: 'dl_firefox', j: 1, w: 3});
     }
 
+    // TODO jsl2
     var jsl2 =
-    {
-        'dcrawjs': {f:'js/vendor/dcraw.js', n: 'dcraw_js', j: 1},
-        'about': {f:'html/about.html', n: 'about', j:0},
-        'sourcecode': {f:'html/sourcecode.html', n: 'sourcecode', j:0},
-        'blog': {f:'html/blog.html', n: 'blog', j:0},
-        'blog_js': {f:'html/js/blog.js', n: 'blog_js', j:1},
-        'blogarticle': {f:'html/blogarticle.html', n: 'blogarticle', j:0},
-        'blogarticle_js': {f:'html/js/blogarticle.js', n: 'blogarticle_js', j:1},
-        'register': {f:'html/register.html', n: 'register', j:0},
-        'register_js': {f:'html/js/register.js', n: 'register_js', j:1},
-        'resellers': {f:'html/resellers.html', n: 'resellers', j:0},
-        'download': {f:'html/download.html', n: 'download', j:0},
-        'download_js': {f:'html/js/download.js', n: 'download_js', j:1},
-        'dispute': {f:'html/dispute.html', n: 'dispute', j:0},
-        'disputenotice': {f:'html/disputenotice.html', n: 'disputenotice', j:0},
-        'copyright': {f:'html/copyright.html', n: 'copyright', j:0},
-        'copyrightnotice': {f:'html/copyrightnotice.html', n: 'copyrightnotice', j:0},
-        'copyright_js': {f:'html/js/copyright.js', n: 'copyright_js', j:1},
-        'privacy': {f:'html/privacy.html', n: 'privacy', j:0},
-        'gdpr': {f:'html/gdpr.html', n: 'gdpr', j:0},
-        'gdpr_js': {f:'html/js/gdpr.js', n: 'gdpr_js', j:1},
-        'mega': {f:'html/mega.html', n: 'mega', j:0},
-        'terms': {f:'html/terms.html', n: 'terms', j:0},
-        'general': {f:'html/general.html', n: 'general', j:0},
-        'backup': {f:'html/backup.html', n: 'backup', j:0},
-        'backup_js': {f:'html/js/backup.js', n: 'backup_js', j:1},
-        'cancel': {f:'html/cancel.html', n: 'cancel', j:0},
-        'cancel_js': {f:'html/js/cancel.js', n: 'cancel_js', j:1},
-        'reset': {f:'html/reset.html', n: 'reset', j:0},
-        'reset_js': {f:'html/js/reset.js', n: 'reset_js', j:1},
-        'change_email_js': {f:'html/js/emailchange.js', n: 'change_email_js', j:1},
-        'change_email': {f:'html/emailchange.html', n: 'change_email', j:0},
-        'filesaver': {f:'js/vendor/filesaver.js', n: 'filesaver', j:1},
-        'recovery': {f:'html/recovery.html', n: 'recovery', j:0},
-        'recovery_js': {f:'html/js/recovery.js', n: 'recovery_js', j:1},
-        'credits': {f:'html/credits.html', n: 'credits', j:0},
-        'takedown': {f:'html/takedown.html', n: 'takedown', j:0},
-        'dev': {f:'html/dev.html', n: 'dev', j:0},
-        'dev_js': {f:'html/js/dev.js', n: 'dev_js', j:1},
-        'sdkterms': {f:'html/sdkterms.html', n: 'sdkterms', j:0},
-        'lunr_js': {f:'js/vendor/elasticlunr.js', n: 'lunr_js', j:1},
-        'help_js': {f:'html/js/help2.js', n: 'help_js', j:1},
-        'sync': {f:'html/sync.html', n: 'sync', j:0},
-        'sync_js': {f:'html/js/sync.js', n: 'sync_js', j:1},
-        'cmd': {f:'html/megacmd.html', n: 'cmd', j:0},
-        'megacmd_js': {f:'html/js/megacmd.js', n: 'megacmd_js', j:1},
-        'cms_snapshot_js': {f:'js/cmsSnapshot.js', n: 'cms_snapshot_js', j:1},
-        'support_js': {f:'html/js/support.js', n: 'support_js', j:1},
-        'support': {f:'html/support.html', n: 'support', j:0},
-        'contact': {f:'html/contact.html', n: 'contact', j:0},
-        'pdfjs': {f:'js/vendor/pdf.js', n: 'pdfjs', j:1},
-        'tiffjs': {f:'js/vendor/tiff.js', n: 'tiffjs', j:1},
-        'webpjs': {f:'js/vendor/webp.js', n: 'webpjs', j:1},
-        'videostream': {f:'js/vendor/videostream.js', n: 'videostream', j:1},
-        'mediainfo': {f:'js/vendor/mediainfo.js', n: 'mediainfo', j:1},
-        'privacycompany': {f:'html/privacycompany.html', n: 'privacycompany', j:0},
-        'zxcvbn_js': {f:'js/vendor/zxcvbn.js', n: 'zxcvbn_js', j:1},
-        'redeem': {f:'html/redeem.html', n: 'redeem', j:0},
-        'redeem_js': {f:'html/js/redeem.js', n: 'redeem_js', j:1},
-        'browsers': {f:'html/browsers.html', n: 'browsers', j:0},
-        'browsers_js': {f:'html/js/browsers.js', n: 'browsers_js', j:1},
-        'megabird': {f:'html/megabird.html', n: 'megabird', j:0},
-        'ios': {f:'html/ios.html', n: 'ios', j:0},
-        'android': {f:'html/android.html', n: 'android', j:0},
-        'wp': {f:'html/wp.html', n: 'wp', j:0},
-        'pdfviewer': {f:'html/pdfViewer.html', n: 'pdfviewer', j:0 },
-        'pdfviewercss': {f:'css/pdfViewer.css', n: 'pdfviewercss', j:4 },
-        'pdfjs2': {f:'js/vendor/pdf.js', n: 'pdfjs2', j:4 },
-        'pdforiginalviewerjs': {f:'js/vendor/pdf.viewer.js', n: 'pdforiginalviewerjs', j:4 },
-        'megadrop': {f:'html/megadrop.html', n: 'megadrop', j: 0 },
-        'nomegadrop': {f:'html/nomegadrop.html', n: 'nomegadrop', j: 0 },
-        'megadrop_js': {f:'js/megadrop.js', n: 'megadrop_js', j: 1 }
-    };
+        {
+            'dcrawjs': {f: 'js/vendor/dcraw.js', n: 'dcraw_js', j: 1},
+            'about': {f: 'html/about.html', n: 'about', j: 0},
+            'sourcecode': {f: 'html/sourcecode.html', n: 'sourcecode', j: 0},
+            'blog': {f: 'html/blog.html', n: 'blog', j: 0},
+            'blog_js': {f: 'html/js/blog.js', n: 'blog_js', j: 1},
+            'blogarticle': {f: 'html/blogarticle.html', n: 'blogarticle', j: 0},
+            'blogarticle_js': {f: 'html/js/blogarticle.js', n: 'blogarticle_js', j: 1},
+            'register': {f: 'html/register.html', n: 'register', j: 0},
+            'register_js': {f: 'html/js/register.js', n: 'register_js', j: 1},
+            'resellers': {f: 'html/resellers.html', n: 'resellers', j: 0},
+            'download': {f: 'html/download.html', n: 'download', j: 0},
+            'download_js': {f: 'html/js/download.js', n: 'download_js', j: 1},
+            'dispute': {f: 'html/dispute.html', n: 'dispute', j: 0},
+            'disputenotice': {f: 'html/disputenotice.html', n: 'disputenotice', j: 0},
+            'copyright': {f: 'html/copyright.html', n: 'copyright', j: 0},
+            'copyrightnotice': {f: 'html/copyrightnotice.html', n: 'copyrightnotice', j: 0},
+            'copyright_js': {f: 'html/js/copyright.js', n: 'copyright_js', j: 1},
+            'privacy': {f: 'html/privacy.html', n: 'privacy', j: 0},
+            'gdpr': {f: 'html/gdpr.html', n: 'gdpr', j: 0},
+            'gdpr_js': {f: 'html/js/gdpr.js', n: 'gdpr_js', j: 1},
+            'mega': {f: 'html/mega.html', n: 'mega', j: 0},
+            'terms': {f: 'html/terms.html', n: 'terms', j: 0},
+            'general': {f: 'html/general.html', n: 'general', j: 0},
+            'backup': {f: 'html/backup.html', n: 'backup', j: 0},
+            'backup_js': {f: 'html/js/backup.js', n: 'backup_js', j: 1},
+            'cancel': {f: 'html/cancel.html', n: 'cancel', j: 0},
+            'cancel_js': {f: 'html/js/cancel.js', n: 'cancel_js', j: 1},
+            'reset': {f: 'html/reset.html', n: 'reset', j: 0},
+            'reset_js': {f: 'html/js/reset.js', n: 'reset_js', j: 1},
+            'change_email_js': {f: 'html/js/emailchange.js', n: 'change_email_js', j: 1},
+            'change_email': {f: 'html/emailchange.html', n: 'change_email', j: 0},
+            'filesaver': {f: 'js/vendor/filesaver.js', n: 'filesaver', j: 1},
+            'recovery': {f: 'html/recovery.html', n: 'recovery', j: 0},
+            'recovery_js': {f: 'html/js/recovery.js', n: 'recovery_js', j: 1},
+            'credits': {f: 'html/credits.html', n: 'credits', j: 0},
+            'takedown': {f: 'html/takedown.html', n: 'takedown', j: 0},
+            'dev': {f: 'html/dev.html', n: 'dev', j: 0},
+            'dev_js': {f: 'html/js/dev.js', n: 'dev_js', j: 1},
+            'sdkterms': {f: 'html/sdkterms.html', n: 'sdkterms', j: 0},
+            'lunr_js': {f: 'js/vendor/elasticlunr.js', n: 'lunr_js', j: 1},
+            'help_js': {f: 'html/js/help2.js', n: 'help_js', j: 1},
+            'sync': {f: 'html/sync.html', n: 'sync', j: 0},
+            'sync_js': {f: 'html/js/sync.js', n: 'sync_js', j: 1},
+            'cmd': {f: 'html/megacmd.html', n: 'cmd', j: 0},
+            'megacmd_js': {f: 'html/js/megacmd.js', n: 'megacmd_js', j: 1},
+            'cms_snapshot_js': {f: 'js/cmsSnapshot.js', n: 'cms_snapshot_js', j: 1},
+            'support_js': {f: 'html/js/support.js', n: 'support_js', j: 1},
+            'support': {f: 'html/support.html', n: 'support', j: 0},
+            'contact': {f: 'html/contact.html', n: 'contact', j: 0},
+            'pdfjs': {f: 'js/vendor/pdf.js', n: 'pdfjs', j: 1},
+            'tiffjs': {f: 'js/vendor/tiff.js', n: 'tiffjs', j: 1},
+            'webpjs': {f: 'js/vendor/webp.js', n: 'webpjs', j: 1},
+            'videostream': {f: 'js/vendor/videostream.js', n: 'videostream', j: 1},
+            'mediainfo': {f: 'js/vendor/mediainfo.js', n: 'mediainfo', j: 1},
+            'privacycompany': {f: 'html/privacycompany.html', n: 'privacycompany', j: 0},
+            'zxcvbn_js': {f: 'js/vendor/zxcvbn.js', n: 'zxcvbn_js', j: 1},
+            'redeem': {f: 'html/redeem.html', n: 'redeem', j: 0},
+            'redeem_js': {f: 'html/js/redeem.js', n: 'redeem_js', j: 1},
+            'browsers': {f: 'html/browsers.html', n: 'browsers', j: 0},
+            'browsers_js': {f: 'html/js/browsers.js', n: 'browsers_js', j: 1},
+            'megabird': {f: 'html/megabird.html', n: 'megabird', j: 0},
+            'ios': {f: 'html/ios.html', n: 'ios', j: 0},
+            'android': {f: 'html/android.html', n: 'android', j: 0},
+            'wp': {f: 'html/wp.html', n: 'wp', j: 0},
+            'pdfviewer': {f: 'html/pdfViewer.html', n: 'pdfviewer', j: 0},
+            'pdfviewercss': {f: 'css/pdfViewer.css', n: 'pdfviewercss', j: 4},
+            'pdfjs2': {f: 'js/vendor/pdf.js', n: 'pdfjs2', j: 4},
+            'pdforiginalviewerjs': {f: 'js/vendor/pdf.viewer.js', n: 'pdforiginalviewerjs', j: 4},
+            'megadrop': {f: 'html/megadrop.html', n: 'megadrop', j: 0},
+            'nomegadrop': {f: 'html/nomegadrop.html', n: 'nomegadrop', j: 0},
+            'megadrop_js': {f: 'js/megadrop.js', n: 'megadrop_js', j: 1}
+        };
 
     var jsl3 = {
         'chat': {
             /* chat related css */
-            'chat_messages_css':{f:'css/chat-messages.css', n: 'chat_messages_css', j:2,'w':5,'c':1,'cache':1,'d':1},
-            'chat_share_links_css':{f:'css/chat-share-links.css', n: 'chat_share_links_css', j:2,'w':5,'c':1,'cache':1,'d':1},
-            'chat_textarea_css':{f:'css/chat-textarea.css', n: 'chat_textarea_css', j:2,'w':5,'c':1,'cache':1,'d':1},
-            'chat_typing_css':{f:'css/chat-typing.css', n: 'chat_typing_css', j:2,'w':5,'c':1,'cache':1,'d':1},
-            'chat_left_pane_css':{f:'css/chat-left-pane.css', n: 'chat_left_pane_css', j:2,'w':5,'c':1,'cache':1,'d':1},
-            'chat_feedback_css':{f:'css/chat-feedback.css', n: 'chat_feedback_css', j:2,'w':5,'c':1,'cache':1,'d':1},
-            'chat_calls_css':{f:'css/chat-calls.css', n: 'chat_calls_css', j:2,'w':5,'c':1,'cache':1,'d':1},
-            'chat_common_css':{f:'css/chat-common.css', n: 'chat_common_css', j:2,'w':5,'c':1,'cache':1,'d':1},
-            'chat_emoji_css':{f:'css/chat-emoji.css', n: 'chat_emoji_css', j:2,'w':2,'c':1,'cache':1,'d':1},
-
-            /* chat related js */
-            'react_js': {f:'js/vendor/react.js', n: 'react_js', j:1},
-            'reactdom_js': {f:'js/vendor/react-dom.js', n: 'reactdom_js', j:1},
-            'appactivityhandler_js': {f:'js/appActivityHandler.js', n: 'appactivityhandler_js', j:1},
-            'keepalive_js': {f:'js/keepAlive.js', n: 'keepalive_js', j:1},
-            'meganotifications_js': {f:'js/megaNotifications.js', n: 'meganotifications_js', j:1},
-            'twemoji_js': {f:'js/vendor/twemoji.noutf.js', n: 'twemoji_js', j:1},
-            'ionsound_js': {f:'js/vendor/ion.sound.js', n: 'ionsound_js', j:1},
-            'favico_js': {f:'js/vendor/favico.js', n: 'favico_js', j:1},
-            'autolinker_js': {f:'js/vendor/autolinker.js', n: 'autolinker_js', j:1},
-            'strongvelope_js': {f:'js/chat/strongvelope.js', n: 'strongvelope_js', j:1},
-            'adapter_js': {f:'js/vendor/chat/adapter.js', n: 'adapter_js', j:1},
-            'megawebrtcadapt_js': {f:'js/chat/webrtcAdapter.js', n: 'megawebrtcadapt_js', j:1},
-            'rtcstats_js': {f:'js/chat/rtcStats.js', n: 'rtcstats_js', j:1},
-            'webrtcsdp_js': {f:'js/chat/webrtcSdp.js', n: 'webrtcsdp_js', j:1},
-            'webrtc_js': {f:'js/chat/webrtc.js', n: 'webrtc_js', j:1},
-            'webrtcimpl_js': {f:'js/chat/webrtcImpl.js', n: 'webrtcimpl_js', j:1},
-            'chatdpersist_js': {f:'js/chat/chatdPersist.js', n: 'chatdpersist_js', j:1},
-            'chatd_js': {f:'js/chat/chatd.js', n: 'chatd_js', j:1},
-            'incomingcalldialog_js': {f:'js/chat/ui/incomingCallDialog.js', n: 'incomingcalldialog_js', j:1},
-            'chatdInt_js': {f:'js/chat/plugins/chatdIntegration.js', n: 'chatdInt_js', j:1},
-            'callManager_js': {f:'js/chat/plugins/callManager.js', n: 'callManager_js', j:1},
-            'urlFilter_js': {f:'js/chat/plugins/urlFilter.js', n: 'urlFilter_js', j:1},
-            'emoticonShortcutsFilter_js': {f:'js/chat/plugins/emoticonShortcutsFilter.js', n: 'emoticonShortcutsFilter_js', j:1},
-            'emoticonsFilter_js': {f:'js/chat/plugins/emoticonsFilter.js', n: 'emoticonsFilter_js', j:1},
-            'rtfFilter_js': {f:'js/chat/plugins/rtfFilter.js', n: 'rtfFilter_js', j:1},
-            'btRtfFilter_js': {f:'js/chat/plugins/backtickRtfFilter.js', n: 'btRtfFilter_js', j:1},
-            'chatnotifications_js': {f:'js/chat/plugins/chatNotifications.js', n: 'chatnotifications_js', j:1},
-            'callfeedback_js': {f:'js/chat/plugins/callFeedback.js', n: 'callfeedback_js', j:1},
-            'persistedTypeArea_js': {f:'js/chat/plugins/persistedTypeArea.js', n: 'persistedTypeArea_js', j:1, w:1},
-            'presencedIntegration_js': {f:'js/chat/plugins/presencedIntegration.js', n: 'presInt_js', j:1, w:1},
-            'richpreviewsFilt_js': {f:'js/chat/plugins/richpreviewsFilter.js', n: 'richpreviewsFilt_js', j:1, w:1},
-            'chatStats_js': {f:'js/chat/plugins/chatStats.js', n: 'chatStats_js', j:1, w:1},
-            'crm_js': {f:'js/connectionRetryManager.js', n: 'crm_js', j:1},
-            'chat_messages_Js': {f:'js/chat/messages.js', n: 'chat_messages_Js', j:1},
-            'presence2_js': {f:'js/chat/presence2.js', n: 'presence2_js', j:1},
-            'chat_react_minified_js': {f:'js/chat/bundle.js', n: 'chat_react_minified_js', j:1},
-
-            /* misc */
-            'onboarding_js': {f:'js/ui/onboarding.js', n: 'onboarding_js', j:1,w:1}
+            // 'chat_messages_css': {
+            //     f: 'css/chat-messages.css',
+            //     n: 'chat_messages_css',
+            //     j: 2,
+            //     'w': 5,
+            //     'c': 1,
+            //     'cache': 1,
+            //     'd': 1
+            // },
+            // 'chat_share_links_css': {
+            //     f: 'css/chat-share-links.css',
+            //     n: 'chat_share_links_css',
+            //     j: 2,
+            //     'w': 5,
+            //     'c': 1,
+            //     'cache': 1,
+            //     'd': 1
+            // },
+            // 'chat_textarea_css': {
+            //     f: 'css/chat-textarea.css',
+            //     n: 'chat_textarea_css',
+            //     j: 2,
+            //     'w': 5,
+            //     'c': 1,
+            //     'cache': 1,
+            //     'd': 1
+            // },
+            // 'chat_typing_css': {
+            //     f: 'css/chat-typing.css',
+            //     n: 'chat_typing_css',
+            //     j: 2,
+            //     'w': 5,
+            //     'c': 1,
+            //     'cache': 1,
+            //     'd': 1
+            // },
+            // 'chat_left_pane_css': {
+            //     f: 'css/chat-left-pane.css',
+            //     n: 'chat_left_pane_css',
+            //     j: 2,
+            //     'w': 5,
+            //     'c': 1,
+            //     'cache': 1,
+            //     'd': 1
+            // },
+            // 'chat_feedback_css': {
+            //     f: 'css/chat-feedback.css',
+            //     n: 'chat_feedback_css',
+            //     j: 2,
+            //     'w': 5,
+            //     'c': 1,
+            //     'cache': 1,
+            //     'd': 1
+            // },
+            // 'chat_calls_css': {f: 'css/chat-calls.css', n: 'chat_calls_css', j: 2, 'w': 5, 'c': 1, 'cache': 1, 'd': 1},
+            // 'chat_common_css': {
+            //     f: 'css/chat-common.css',
+            //     n: 'chat_common_css',
+            //     j: 2,
+            //     'w': 5,
+            //     'c': 1,
+            //     'cache': 1,
+            //     'd': 1
+            // },
+            // 'chat_emoji_css': {f: 'css/chat-emoji.css', n: 'chat_emoji_css', j: 2, 'w': 2, 'c': 1, 'cache': 1, 'd': 1},
+            //
+            // /* chat related js */
+            // 'react_js': {f: 'js/vendor/react.js', n: 'react_js', j: 1},
+            // 'reactdom_js': {f: 'js/vendor/react-dom.js', n: 'reactdom_js', j: 1},
+            // 'appactivityhandler_js': {f: 'js/appActivityHandler.js', n: 'appactivityhandler_js', j: 1},
+            // 'keepalive_js': {f: 'js/keepAlive.js', n: 'keepalive_js', j: 1},
+            // 'meganotifications_js': {f: 'js/megaNotifications.js', n: 'meganotifications_js', j: 1},
+            // 'twemoji_js': {f: 'js/vendor/twemoji.noutf.js', n: 'twemoji_js', j: 1},
+            // 'ionsound_js': {f: 'js/vendor/ion.sound.js', n: 'ionsound_js', j: 1},
+            // 'favico_js': {f: 'js/vendor/favico.js', n: 'favico_js', j: 1},
+            // 'autolinker_js': {f: 'js/vendor/autolinker.js', n: 'autolinker_js', j: 1},
+            // 'strongvelope_js': {f: 'js/chat/strongvelope.js', n: 'strongvelope_js', j: 1},
+            // 'adapter_js': {f: 'js/vendor/chat/adapter.js', n: 'adapter_js', j: 1},
+            // 'megawebrtcadapt_js': {f: 'js/chat/webrtcAdapter.js', n: 'megawebrtcadapt_js', j: 1},
+            // 'rtcstats_js': {f: 'js/chat/rtcStats.js', n: 'rtcstats_js', j: 1},
+            // 'webrtcsdp_js': {f: 'js/chat/webrtcSdp.js', n: 'webrtcsdp_js', j: 1},
+            // 'webrtc_js': {f: 'js/chat/webrtc.js', n: 'webrtc_js', j: 1},
+            // 'webrtcimpl_js': {f: 'js/chat/webrtcImpl.js', n: 'webrtcimpl_js', j: 1},
+            // 'chatdpersist_js': {f: 'js/chat/chatdPersist.js', n: 'chatdpersist_js', j: 1},
+            // 'chatd_js': {f: 'js/chat/chatd.js', n: 'chatd_js', j: 1},
+            // 'incomingcalldialog_js': {f: 'js/chat/ui/incomingCallDialog.js', n: 'incomingcalldialog_js', j: 1},
+            // 'chatdInt_js': {f: 'js/chat/plugins/chatdIntegration.js', n: 'chatdInt_js', j: 1},
+            // 'callManager_js': {f: 'js/chat/plugins/callManager.js', n: 'callManager_js', j: 1},
+            // 'urlFilter_js': {f: 'js/chat/plugins/urlFilter.js', n: 'urlFilter_js', j: 1},
+            // 'emoticonShortcutsFilter_js': {
+            //     f: 'js/chat/plugins/emoticonShortcutsFilter.js',
+            //     n: 'emoticonShortcutsFilter_js',
+            //     j: 1
+            // },
+            // 'emoticonsFilter_js': {f: 'js/chat/plugins/emoticonsFilter.js', n: 'emoticonsFilter_js', j: 1},
+            // 'rtfFilter_js': {f: 'js/chat/plugins/rtfFilter.js', n: 'rtfFilter_js', j: 1},
+            // 'btRtfFilter_js': {f: 'js/chat/plugins/backtickRtfFilter.js', n: 'btRtfFilter_js', j: 1},
+            // 'chatnotifications_js': {f: 'js/chat/plugins/chatNotifications.js', n: 'chatnotifications_js', j: 1},
+            // 'callfeedback_js': {f: 'js/chat/plugins/callFeedback.js', n: 'callfeedback_js', j: 1},
+            // 'persistedTypeArea_js': {f: 'js/chat/plugins/persistedTypeArea.js', n: 'persistedTypeArea_js', j: 1, w: 1},
+            // 'presencedIntegration_js': {f: 'js/chat/plugins/presencedIntegration.js', n: 'presInt_js', j: 1, w: 1},
+            // 'richpreviewsFilt_js': {f: 'js/chat/plugins/richpreviewsFilter.js', n: 'richpreviewsFilt_js', j: 1, w: 1},
+            // 'chatStats_js': {f: 'js/chat/plugins/chatStats.js', n: 'chatStats_js', j: 1, w: 1},
+            // 'crm_js': {f: 'js/connectionRetryManager.js', n: 'crm_js', j: 1},
+            // 'chat_messages_Js': {f: 'js/chat/messages.js', n: 'chat_messages_Js', j: 1},
+            // 'presence2_js': {f: 'js/chat/presence2.js', n: 'presence2_js', j: 1},
+            // 'chat_react_minified_js': {f: 'js/chat/bundle.js', n: 'chat_react_minified_js', j: 1},
+            //
+            // /* misc */
+            // 'onboarding_js': {f: 'js/ui/onboarding.js', n: 'onboarding_js', j: 1, w: 1}
         }
     };
 
     var subpages =
-    {
-        'about': ['about'],
-        'sourcecode': ['sourcecode'],
-        'terms': ['terms'],
-        'general': ['general'],
-        'credits': ['credits'],
-        'backup': ['backup','backup_js','filesaver'],
-        'recovery': ['recovery','recovery_js'],
-        'reset': ['reset','reset_js'],
-        'verify': ['change_email', 'change_email_js'],
-        'cancel': ['cancel', 'cancel_js'],
-        'blog': ['blog','blog_js','blogarticle','blogarticle_js'],
-        'register': ['register','register_js', 'zxcvbn_js'],
-        'newsignup': ['register','register_js', 'zxcvbn_js'],
-        'resellers': ['resellers'],
-        '!': ['download','download_js'],
-        'dispute': ['dispute'],
-        'disputenotice': ['disputenotice', 'copyright_js'],
-        'copyright': ['copyright'],
-        'copyrightnotice': ['copyrightnotice','copyright_js'],
-        'privacy': ['privacy','privacycompany'],
-        'gdpr': ['gdpr', 'gdpr_js'],
-        'mega': ['mega'],
-        'takedown': ['takedown'],
-        'sync': ['sync', 'sync_js'],
-        'cmd': ['cmd', 'megacmd_js'],
-        'support': ['support_js', 'support'],
-        'contact': ['contact'],
-        'dev': ['dev','dev_js','sdkterms'],
-        'sdk': ['dev','dev_js','sdkterms'],
-        'doc': ['dev','dev_js','sdkterms'],
-        'help': [
-            'lunr_js', 'help_js'
-        ],
-        'recover': ['reset', 'reset_js'],
-        'redeem': ['redeem', 'redeem_js'],
-        'plugin': ['browsers', 'browsers_js'],
-        'extensions': ['browsers', 'browsers_js'],
-        'bird': ['megabird'],
-        'ios': ['ios'],
-        'android': ['android'],
-        'wp': ['wp']
-    };
+        {
+            'about': ['about'],
+            'sourcecode': ['sourcecode'],
+            'terms': ['terms'],
+            'general': ['general'],
+            'credits': ['credits'],
+            'backup': ['backup', 'backup_js', 'filesaver'],
+            'recovery': ['recovery', 'recovery_js'],
+            'reset': ['reset', 'reset_js'],
+            'verify': ['change_email', 'change_email_js'],
+            'cancel': ['cancel', 'cancel_js'],
+            'blog': ['blog', 'blog_js', 'blogarticle', 'blogarticle_js'],
+            'register': ['register', 'register_js', 'zxcvbn_js'],
+            'newsignup': ['register', 'register_js', 'zxcvbn_js'],
+            'resellers': ['resellers'],
+            '!': ['download', 'download_js'],
+            'dispute': ['dispute'],
+            'disputenotice': ['disputenotice', 'copyright_js'],
+            'copyright': ['copyright'],
+            'copyrightnotice': ['copyrightnotice', 'copyright_js'],
+            'privacy': ['privacy', 'privacycompany'],
+            'gdpr': ['gdpr', 'gdpr_js'],
+            'mega': ['mega'],
+            'takedown': ['takedown'],
+            'sync': ['sync', 'sync_js'],
+            'cmd': ['cmd', 'megacmd_js'],
+            'support': ['support_js', 'support'],
+            'contact': ['contact'],
+            'dev': ['dev', 'dev_js', 'sdkterms'],
+            'sdk': ['dev', 'dev_js', 'sdkterms'],
+            'doc': ['dev', 'dev_js', 'sdkterms'],
+            'help': [
+                'lunr_js', 'help_js'
+            ],
+            'recover': ['reset', 'reset_js'],
+            'redeem': ['redeem', 'redeem_js'],
+            'plugin': ['browsers', 'browsers_js'],
+            'extensions': ['browsers', 'browsers_js'],
+            'bird': ['megabird'],
+            'ios': ['ios'],
+            'android': ['android'],
+            'wp': ['wp']
+        };
 
     if (is_mobile) {
         // Page specific
         subpages['!'] = ['download_js'];
     }
-	if (page == 'megacmd') page = 'cmd';
+    if (page == 'megacmd') page = 'cmd';
 
-    if (page && !is_iframed)
-    {
-        for (var p in subpages)
-        {
-            if (page.substr(0,p.length) == p)
-            {
+    if (page && !is_iframed) {
+        for (var p in subpages) {
+            if (page.substr(0, p.length) == p) {
                 for (var i in subpages[p]) jsl.push(jsl2[subpages[p][i]]);
             }
         }
     }
-    var lightweight=false;
-    var waitingToBeLoaded = 0,jsl_done,jj_done = !jj;
+    var lightweight = false;
+    var waitingToBeLoaded = 0, jsl_done, jj_done = !jj;
     var fx_startup_cache = is_chrome_firefox && nocontentcheck;
-    if (!fx_startup_cache && !nocontentcheck)
-    {
+    if (!fx_startup_cache && !nocontentcheck) {
         addScript([asmCryptoSha256Js]);
     }
-    if ((typeof Worker !== 'undefined') && (typeof window.URL !== 'undefined') && !fx_startup_cache && !nocontentcheck)
-    {
+    // TODO Worker
+    if ((typeof Worker !== 'undefined') && (typeof window.URL !== 'undefined') && !fx_startup_cache && !nocontentcheck) {
         var hashdata = ['self.postMessage = self.webkitPostMessage || self.postMessage;', asmCryptoSha256Js, 'self.onmessage = function(e) { try { var hashHex = asmCryptoSha256.SHA256.hex(e.data.text); e.data.hash = hashHex; self.postMessage(e.data); } catch(err) { e.data.error = err.message; self.postMessage(e.data);  } };'];
         var hash_url = mObjectURL(hashdata, "text/javascript");
         var hash_workers = [];
-        var i =0;
-        while (i < 2)
-        {
-            try
-            {
+        var i = 0;
+        while (i < 2) {
+            try {
                 hash_workers[i] = new Worker(hash_url);
                 hash_workers[i].postMessage = hash_workers[i].webkitPostMessage || hash_workers[i].postMessage;
-                hash_workers[i].onmessage = function(e)
-                {
-                    if (e.data.error)
-                    {
-                        console.log('error',e.data.error);
+                hash_workers[i].onmessage = function (e) {
+                    if (e.data.error) {
+                        console.log('error', e.data.error);
                         console.log(e.data.text);
                         alert('error');
                     }
                     var file = Object(jsl[e.data.jsi]).f || 'unknown.js';
-                    if (!nocontentcheck && !compareHashes(e.data.hash, file))
-                    {
-                        if (bootstaticpath.indexOf('cdn') > -1)
-                        {
+                    if (!nocontentcheck && !compareHashes(e.data.hash, file)) {
+                        if (bootstaticpath.indexOf('cdn') > -1) {
                             sessionStorage.skipcdn = 1;
                             document.location.reload();
                         }
@@ -2509,8 +2577,7 @@ else if (!b_u) {
 
                         contenterror = 1;
                     }
-                    if (!contenterror)
-                    {
+                    if (!contenterror) {
                         jsl_current += jsl[e.data.jsi].w || 1;
                         jsl_progress();
                         if (++jslcomplete == jsl.length) initall();
@@ -2518,8 +2585,7 @@ else if (!b_u) {
                     }
                 };
             }
-            catch(e)
-            {
+            catch (e) {
                 hash_workers = undefined;
                 break;
             }
@@ -2529,11 +2595,10 @@ else if (!b_u) {
     }
     asmCryptoSha256Js = null;
 
-    if (jj)
-    {
-        var _queueWaitToBeLoaded = function(id, elem) {
+    if (jj) {
+        var _queueWaitToBeLoaded = function (id, elem) {
             waitingToBeLoaded++;
-            elem.onload = function() {
+            elem.onload = function () {
                 // if (d) console.log('jj.progress...', waitingToBeLoaded);
 
                 jsl_loaded[Object(jsl[id]).n] = 1;
@@ -2548,7 +2613,7 @@ else if (!b_u) {
             };
         };
 
-        var createScriptTag = function(id, src) {
+        var createScriptTag = function (id, src) {
             var elem = mCreateElement('script', {type: 'text/javascript'}, 'head');
             elem.async = false;
             _queueWaitToBeLoaded(id, elem);
@@ -2556,7 +2621,7 @@ else if (!b_u) {
             return elem;
         };
 
-        var createStyleTag = function(id, src) {
+        var createStyleTag = function (id, src) {
             var elem = mCreateElement('link', {type: 'text/css', rel: "stylesheet"}, 'head');
             _queueWaitToBeLoaded(id, elem);
             elem.href = src;
@@ -2564,10 +2629,9 @@ else if (!b_u) {
         };
     }
 
-    var pages = [],xhr_progress,xhr_stack,jsl_fm_current,jsl_current,jsl_total,jsl_perc,jsli,jslcomplete;
+    var pages = [], xhr_progress, xhr_stack, jsl_fm_current, jsl_current, jsl_total, jsl_perc, jsli, jslcomplete;
 
-    function jsl_start()
-    {
+    function jsl_start() {
         jslcomplete = 0;
         if (d && jj) {
             xhr_progress = [0, 0, 0, 0, 0];
@@ -2579,7 +2643,7 @@ else if (!b_u) {
         jsl_current = 0;
         jsl_total = 0;
         jsl_perc = 0;
-        jsli=0;
+        jsli = 0;
         var jjNoCache = '';
         if (localStorage.jjnocache) {
             jjNoCache = '?r=' + (new Date().toISOString().replace(/[^\w]/g, ''));
@@ -2612,47 +2676,39 @@ else if (!b_u) {
             console.log('jj.total...', waitingToBeLoaded);
         }
 
-        if (fx_startup_cache)
-        {
-            var step = function(jsi)
-            {
+        if (fx_startup_cache) {
+            var step = function (jsi) {
                 jsl_current += jsl[jsi].w || 1;
                 jsl_progress();
                 if (++jslcomplete == jsl.length) {
                     jsl_done = true;
                     initall();
                 }
-                else
-                {
+                else {
                     // mozRunAsync(next.bind(this, jsli++));
                     next(jsli++);
                 }
             };
-            var next = function(jsi)
-            {
+            var next = function (jsi) {
                 var file = bootstaticpath + jsl[jsi].f;
 
-                if (jsl[jsi].j == 1)
-                {
-                    try
-                    {
+                if (jsl[jsi].j == 1) {
+                    try {
                         loadSubScript(file);
                     }
-                    catch(e)
-                    {
+                    catch (e) {
                         Cu.reportError(e);
 
                         if (String(e) !== "Error: AsmJS modules are not yet supported in XDR serialization."
-                                && file.indexOf('dcraw') === -1) {
+                            && file.indexOf('dcraw') === -1) {
 
                             return siteLoadError(e, file);
                         }
                     }
                     step(jsi);
                 }
-                else
-                {
-                    mozNetUtilFetch(file, jsl[jsi].j === 3, function(data) {
+                else {
+                    mozNetUtilFetch(file, jsl[jsi].j === 3, function (data) {
                         if (data === null) {
                             siteLoadError(2, file);
                         }
@@ -2669,21 +2725,18 @@ else if (!b_u) {
             };
             next(jsli++);
         }
-        else
-        {
-            for (var i = xhr_progress.length; i--; ) jsl_load(i);
+        else {
+            for (var i = xhr_progress.length; i--;) jsl_load(i);
         }
     }
 
-    var xhr_timeout=30000;
+    var xhr_timeout = 30000;
     var urlErrors = {};
 
-    function xhr_error()
-    {
-        xhr_timeout+=10000;
+    function xhr_error() {
+        xhr_timeout += 10000;
         console.log(xhr_timeout);
-        if (bootstaticpath.indexOf('cdn') > -1)
-        {
+        if (bootstaticpath.indexOf('cdn') > -1) {
             bootstaticpath = geoStaticpath(1);
             staticpath = geoStaticpath(1);
         }
@@ -2692,7 +2745,7 @@ else if (!b_u) {
         var xhri = this.xhri;
         urlErrors[url] = (urlErrors[url] | 0) + 1;
         if (urlErrors[url] < 20) {
-            setTimeout(function() {
+            setTimeout(function () {
                 xhr_progress[xhri] = 0;
                 xhr_load(url, jsi, xhri);
             }, urlErrors[url] * 100);
@@ -2702,11 +2755,9 @@ else if (!b_u) {
         }
     }
 
-    function xhr_load(url,jsi,xhri)
-    {
+    function xhr_load(url, jsi, xhri) {
         xhr_stack[xhri] = getxhr();
-        xhr_stack[xhri].onload = function()
-        {
+        xhr_stack[xhri].onload = function () {
             try {
                 jsl[this.jsi].text = this.response || this.responseText;
             }
@@ -2714,27 +2765,28 @@ else if (!b_u) {
                 return siteLoadError(ex, bootstaticpath + Object(jsl[this.jsi]).f);
             }
 
-            if (typeof hash_workers !== 'undefined' && !nocontentcheck)
-            {
-                hash_workers[this.xhri].postMessage({'text':jsl[this.jsi].text,'xhr':'test','jsi':this.jsi,'xhri':this.xhri});
+            if (typeof hash_workers !== 'undefined' && !nocontentcheck) {
+                hash_workers[this.xhri].postMessage({
+                    'text': jsl[this.jsi].text,
+                    'xhr': 'test',
+                    'jsi': this.jsi,
+                    'xhri': this.xhri
+                });
             }
-            else
-            {
+            else {
                 if (!nocontentcheck) {
 
                     // Hash the file content and convert to hex
                     var hashHex = asmCryptoSha256.SHA256.hex(jsl[this.jsi].text);
 
                     // Compare the hash from the file and the correct hash determined at deployment time
-                    if (!compareHashes(hashHex, jsl[this.jsi].f))
-                    {
+                    if (!compareHashes(hashHex, jsl[this.jsi].f)) {
                         siteLoadError(1, jsl[this.jsi].f);
                         contenterror = 1;
                     }
                 }
 
-                if (!contenterror)
-                {
+                if (!contenterror) {
                     jsl_current += jsl[this.jsi].w || 1;
                     jsl_progress();
                     if (++jslcomplete == jsl.length) initall();
@@ -2742,42 +2794,37 @@ else if (!b_u) {
                 }
             }
         };
-        xhr_stack[xhri].onreadystatechange = function()
-        {
-            try
-            {
-                if (this.readyState == 1) this.timeout=0;
+        xhr_stack[xhri].onreadystatechange = function () {
+            try {
+                if (this.readyState == 1) this.timeout = 0;
             }
-            catch(e)
-            {
+            catch (e) {
 
             }
         };
         xhr_stack[xhri].onerror = xhr_error;
         xhr_stack[xhri].ontimeout = xhr_error;
-        if (jsl[jsi].text)
-        {
+        if (jsl[jsi].text) {
             if (++jslcomplete == jsl.length) initall();
             else jsl_load(xhri);
         }
-        else
-        {
+        else {
             xhr_stack[xhri].url = url;
             xhr_stack[xhri].jsi = jsi;
             xhr_stack[xhri].xhri = xhri;
             if (localStorage.dd) url += '?t=' + Date.now();
             xhr_stack[xhri].open("GET", bootstaticpath + url, true);
             xhr_stack[xhri].timeout = xhr_timeout;
-            if (is_chrome_firefox || is_firefox_web_ext) {
+            if (is_chrome_firefox ){ // || is_firefox_web_ext) {
                 xhr_stack[xhri].overrideMimeType('text/plain');
             }
             xhr_stack[xhri].send(null);
         }
     }
-    window.onload = function ()
-    {
+
+    window.onload = function () {
         pageLoadTime = Date.now();
-        mBroadcaster.once('startMega', function() {
+        mBroadcaster.once('startMega', function () {
             pageLoadTime = Date.now() - pageLoadTime;
         });
 
@@ -2785,15 +2832,15 @@ else if (!b_u) {
             jsl_start();
         }
     };
-    function jsl_load(xhri)
-    {
-        if (jsl[jsli]) xhr_load(jsl[jsli].f, jsli++,xhri);
+
+    function jsl_load(xhri) {
+        if (jsl[jsli]) xhr_load(jsl[jsli].f, jsli++, xhri);
     }
-    function jsl_progress()
-    {
+
+    function jsl_progress() {
         // if (d) console.log('done',(jsl_current+jsl_fm_current));
         // if (d) console.log('total',jsl_total);
-        var p = Math.floor((jsl_current+jsl_fm_current)/jsl_total*100);
+        var p = Math.floor((jsl_current + jsl_fm_current) / jsl_total * 100);
         var deg = 0;
         var leftProgressBlock = document.getElementById('loadinganimleft');
         var rightProgressBlock = document.getElementById('loadinganimright');
@@ -2803,11 +2850,10 @@ else if (!b_u) {
             return false;
         }
 
-        if ((p > jsl_perc) && (p <= 100))
-        {
+        if ((p > jsl_perc) && (p <= 100)) {
             jsl_perc = p;
-            if (d) console.log('jsl.progress... ' + p + '%', (jsl_current+jsl_fm_current), jsl_total);
-            if (is_extension) p=100;
+            if (d) console.log('jsl.progress... ' + p + '%', (jsl_current + jsl_fm_current), jsl_total);
+            if (is_extension) p = 100;
             deg = 360 * p / 100;
             if (deg <= 180) {
                 rightProgressBlock.style.webkitTransform = 'rotate(' + deg + 'deg)';
@@ -2829,50 +2875,46 @@ else if (!b_u) {
             }
         }
     }
-    var cssCache=false;
-    var jsl_loaded={};
+
+    var cssCache = false;
+    var jsl_loaded = {};
+
     function initall() {
         var jsar = [];
         var cssar = [];
         var nodedec = {};
         //for(var i in localStorage) if (i.substr(0,6) == 'cache!') delete localStorage[i];
-        for (var i in jsl)
-        {
+        for (var i in jsl) {
             if (!jj || !jsl[i].j || jsl[i].j > 2) {
                 jsl_loaded[jsl[i].n] = 1;
             }
-            if ((jsl[i].j == 1) && (!jj))
-            {
-                if (!fx_startup_cache)
-                {
+            if ((jsl[i].j == 1) && (!jj)) {
+                if (!fx_startup_cache) {
                     jsar.push(jsl[i].text + '\n\n');
                 }
             }
-            else if ((jsl[i].j == 2) && (!jj))
-            {
-                if (document.getElementById('bootbottom')) document.getElementById('bootbottom').style.display='none';
-                if (!is_chrome_firefox && window.URL)
-                {
-                    cssar.push(jsl[i].text.replace(/\.\.\//g,staticpath).replace(new RegExp( "\\/en\\/", "g"),'/' + lang + '/'));
+            else if ((jsl[i].j == 2) && (!jj)) {
+                if (document.getElementById('bootbottom')) document.getElementById('bootbottom').style.display = 'none';
+                if (!is_chrome_firefox && window.URL) {
+                    cssar.push(jsl[i].text.replace(/\.\.\//g, staticpath).replace(new RegExp("\\/en\\/", "g"), '/' + lang + '/'));
                 }
-                else
-                {
+                else {
                     mCreateElement('style', {type: 'text/css', rel: 'stylesheet'}, 'head')
-                        .textContent = jsl[i].text.replace(/\.\.\//g,staticpath).replace(new RegExp( "\\/en\\/", "g"),'/' + lang + '/');
+                        .textContent = jsl[i].text.replace(/\.\.\//g, staticpath).replace(new RegExp("\\/en\\/", "g"), '/' + lang + '/');
                 }
             }
             else if (jsl[i].j == 3) {
                 try {
                     l = !jj && l || JSON.parse(jsl[i].text);
-                } catch(ex) {
+                } catch (ex) {
                     console.error(ex);
                     if (lang !== 'en') {
                         localStorage.lang = 'en';
-                        setTimeout(function() {
+                        setTimeout(function () {
                             document.location.reload();
                         }, 300);
                     }
-                    throw new Error('Error parsing language file '+lang+'.json');
+                    throw new Error('Error parsing language file ' + lang + '.json');
                 }
             }
             else if (jsl[i].j === 4) { // new type to distinguish files to be used on iframes
@@ -2917,8 +2959,7 @@ else if (!b_u) {
                 nodedec[jsl[i].n] = jsl[i].text;
             }
         }
-        if (window.URL)
-        {
+        if (window.URL) {
             nodedec = !jj && !is_extension && !("ActiveXObject" in window) && nodedec;
 
             if (nodedec && Object.keys(nodedec).length === 3) {
@@ -2928,9 +2969,8 @@ else if (!b_u) {
                 mega.nodedecBlobURI = mObjectURL(nodedec, 'text/javascript');
                 nodedec = tmp = undefined;
             }
-            if (localStorage.makeCache && !cssCache) cssCache=cssar;
-            if (cssar.length)
-            {
+            if (localStorage.makeCache && !cssCache) cssCache = cssar;
+            if (cssar.length) {
                 mCreateElement('link', {type: 'text/css', rel: 'stylesheet'}, 'head', cssar);
             }
             if (!jsl_done || jsar.length) {
@@ -2946,51 +2986,54 @@ else if (!b_u) {
                     addScript(jsar);
                 }
             }
-            jsar=undefined;
-            cssar=undefined;
+            jsar = undefined;
+            cssar = undefined;
         }
-        else
-        {
-            jsl_done=true;
+        else {
+            jsl_done = true;
             boot_done();
         }
     }
 
     var istaticpath = staticpath;
-    if (is_chrome_web_ext || is_firefox_web_ext) {
-        istaticpath = '../';
-    }
-    else if (is_chrome_firefox) {
+    // if (is_chrome_web_ext || is_firefox_web_ext) {
+    //     istaticpath = '../';
+    // }
+    // else
+    if (is_chrome_firefox) {
         istaticpath = 'chrome://mega/content/';
     }
+    // TODO 加载等待页面
 
     mCreateElement('style', {type: 'text/css'}, 'body').textContent = '.div, span, input {outline: none;}.hidden {display: none;}.clear {clear: both;margin: 0px;padding: 0px;display: block;}.loading-main-block {width: 100%;height: 100%;position: fixed;z-index: 10000;font-family:Arial, Helvetica, sans-serif;}.loading-mid-white-block {height: 100%;width:100%;}.loading-cloud {width: 222px;position: fixed;height: 158px;background-image: url(' + istaticpath + 'images/mega/loading-sprite_v4.png);background-repeat: no-repeat;background-position: 0 0;left:50%;top:50%;margin:-79px 0 0 -111px;}.loading-m-block{width:60px;height:60px;position:absolute; left:81px;top:65px;background-color:white;background-image: url(' + istaticpath + 'images/mega/loading-sprite_v4.png);background-repeat: no-repeat;background-position: -81px -65px;border-radius: 100%;-webkit-border-radius: 100%;border-radius: 100%;z-index:10;}.loading-percentage { width: 80px;height: 80px; background-color: #e1e1e1;position: absolute;-moz-border-radius: 100%;-webkit-border-radius: 100%;border-radius: 100%;overflow: hidden;background-image: url(' + istaticpath + 'images/mega/loading-sprite_v4.png);background-repeat: no-repeat;background-position: -70px -185px;left:71px;top:55px;}.loading-percentage ul {list-style-type: none;-moz-border-radius: 100%;-webkit-border-radius: 100%;border-radius: 100%;overflow: hidden;}.loading-percentage li {position: absolute;top: 0px;}.loading-percentage p, .loading-percentage li, .loading-percentage ul{width: 80px;height: 80px;padding: 0;margin: 0;}.loading-percentage span {display: block;width: 40px;height: 80px;}.loading-percentage ul :nth-child(odd) {clip: rect(0px, 80px, 80px, 40px);}.loading-percentage ul :nth-child(even) {clip: rect(0px, 40px, 80px, 0px);}.loading-percentage .right-c span {-moz-border-radius-topleft: 40px;-moz-border-radius-bottomleft: 40px;-webkit-border-top-left-radius: 40px;-webkit-border-bottom-left-radius: 40px;border-top-left-radius: 40px;border-bottom-left-radius: 40px;background-color:#dc0000;}.loading-percentage .left-c span {margin-left: 40px;-moz-border-radius-topright: 40px;-moz-border-radius-bottomright: 40px;-webkit-border-top-right-radius: 40px;-webkit-border-bottom-right-radius: 40px;border-top-right-radius: 40px;border-bottom-right-radius: 40px;background-color:#dc0000;}.loading-main-bottom {max-width: 940px;width: 100%;position: absolute;bottom: 20px;left: 50%;margin: 0 0 0 -470px;text-align: center;}.loading-bottom-button {height: 29px;width: 29px;float: left;background-image: url(' + istaticpath + 'images/mega/loading-sprite_v4.png);background-repeat: no-repeat;cursor: pointer;}.st-social-block-load {position: fixed;bottom: 20px;left: 0;width: 100%;height: 43px;text-align: center;}.st-bottom-button {height: 24px;width: 24px;margin: 0 8px;display: inline-block;background-image: url(' + istaticpath + 'images/mega/loading-sprite_v4.png);background-repeat: no-repeat;background-position:11px -405px;cursor: pointer;-moz-border-radius: 100%;-webkit-border-radius: 100%;border-radius: 100%;-webkit-transition: all 200ms ease-in-out;-moz-transition: background-color 200ms ease-in-out;-o-transition: background-color 200ms ease-in-out;-ms-transition: background-color 200ms ease-in-out;transition: background-color 200ms ease-in-out;background-color:#999999;}.st-bottom-button.st-google-button {background-position: 11px -405px;}.st-bottom-button.st-google-button {background-position: -69px -405px;}.st-bottom-button.st-twitter-button{background-position: -29px -405px;}.st-bottom-button:hover {background-color:#334f8d;}.st-bottom-button.st-twitter-button:hover {background-color:#1a96f0;}.st-bottom-button.st-google-button:hover {background-color:#d0402a;}@media only screen and (-webkit-min-device-pixel-ratio: 1.5), only screen and (-o-min-device-pixel-ratio: 3/2), only screen and (min--moz-device-pixel-ratio: 1.5), only screen and (min-device-pixel-ratio: 1.5) {.maintance-block, .loading-percentage, .loading-m-block, .loading-cloud, .loading-bottom-button,.st-bottom-button, .st-bottom-scroll-button {background-image: url(' + istaticpath + 'images/mega/loading-sprite_v4@2x.png);    background-size: 222px auto;}}';
 
-    mCreateElement('div', { "class": "loading-main-block", id: "loading"}, 'body')
+    mCreateElement('div', {"class": "loading-main-block", id: "loading"}, 'body')
         .innerHTML =
-            '<div class="loading-mid-white-block">'+
-            '    <div class="loading-cloud">'+
-            '        <div class="loading-percentage">'+
-            '            <ul>'+
-            '                <li class="right-c"><p id="loadinganimright"><span></span></p></li>'+
-            '                <li class="left-c"><p  id="loadinganimleft"><span></span></p></li>'+
-            '            </ul>'+
-            '        </div>'+
-            '        <div class="loading-m-block"></div>'+
-            '    </div>'+
-            '    <div class="st-social-block-load" id="bootbottom">'+
-            '        <a href="https://www.facebook.com/MEGAprivacy" target="_blank" rel="noopener noreferrer" class="st-bottom-button st-facebook-button"></a>'+
-            '        <a href="https://www.twitter.com/MEGAprivacy" target="_blank" rel="noopener noreferrer" class="st-bottom-button st-twitter-button"></a>'+
-            '    </div>'+
-            '</div>';
+        '<div class="loading-mid-white-block">' +
+        '    <div class="loading-cloud">' +
+        '        <div class="loading-percentage">' +
+        '            <ul>' +
+        '                <li class="right-c"><p id="loadinganimright"><span></span></p></li>' +
+        '                <li class="left-c"><p  id="loadinganimleft"><span></span></p></li>' +
+        '            </ul>' +
+        '        </div>' +
+        '        <div class="loading-m-block"></div>' +
+        '    </div>' +
+        // '    <div class="st-social-block-load" id="bootbottom">'+
+        // '        <a href="https://www.facebook.com/MEGAprivacy" target="_blank" rel="noopener noreferrer" class="st-bottom-button st-facebook-button"></a>'+
+        // '        <a href="https://www.twitter.com/MEGAprivacy" target="_blank" rel="noopener noreferrer" class="st-bottom-button st-twitter-button"></a>'+
+        // '    </div>'+
+        '</div>';
 
     if (is_iframed) {
         try {
             document.body.textContent = '';
             document.body.style.background = is_drop ? '#fff' : '#000';
-            jsl_progress = function() {};
+            jsl_progress = function () {
+            };
         }
-        catch (ex) {}
+        catch (ex) {
+        }
     }
 
     var u_storage, loginresponse, u_sid, dl_res;
@@ -2999,9 +3042,9 @@ else if (!b_u) {
     (function _crossTabSession(u_storage) {
         'use strict';
 
-        var xhr = function(params, data, callback) {
+        var xhr = function (params, data, callback) {
             var xhr = getxhr();
-            xhr.onloadend = function() {
+            xhr.onloadend = function () {
                 var response = false;
 
                 if (this.status === 200) {
@@ -3025,13 +3068,13 @@ else if (!b_u) {
             xhr.send(JSON.stringify([data]));
         };
 
-        var ack = function() {
+        var ack = function () {
             if (!(u_sid = u_storage.sid)) {
                 loginresponse = false;
             }
 
             if (loginresponse) {
-                xhr('&sid=' + u_storage.sid, {'a': 'ug'}, function(response) {
+                xhr('&sid=' + u_storage.sid, {'a': 'ug'}, function (response) {
                     loginresponse = false;
 
                     if (parseInt(response) === -15 /* ESID */) {
@@ -3046,7 +3089,7 @@ else if (!b_u) {
             if (dl_res) {
                 var g = {a: 'g', p: page.split('!')[1], 'ad': showAd(), 'esid': u_sid || ''};
 
-                xhr(false, g, function(response) {
+                xhr(false, g, function (response) {
                     dl_res = response[0] || response;
                 });
             }
@@ -3067,7 +3110,7 @@ else if (!b_u) {
             ack();
         }
         else {
-            var onStorageEvent = function(ev) {
+            var onStorageEvent = function (ev) {
                 if (ev.key === 'sb!sid') {
                     var value = JSON.parse(ev.newValue || '""');
 
@@ -3081,7 +3124,7 @@ else if (!b_u) {
                             data.sid = sessionStorage.sid;
                         }
 
-                        onIdle(function() {
+                        onIdle(function () {
                             localStorage.setItem('sb!sid', JSON.stringify(data));
                         });
                     }
@@ -3113,7 +3156,7 @@ else if (!b_u) {
                 ack();
             }
             else {
-                setTimeout(function() {
+                setTimeout(function () {
                     if (ack) {
                         ack();
                     }
@@ -3124,20 +3167,17 @@ else if (!b_u) {
         }
     })(u_storage);
 
-    function boot_auth(u_ctx,r)
-    {
+    function boot_auth(u_ctx, r) {
         u_type = r;
-        u_checked=true;
+        u_checked = true;
         startMega();
     }
 
-    var boot_done_makecache=false;
+    var boot_done_makecache = false;
 
-    function boot_done()
-    {
-        if (boot_done_makecache)
-        {
-            boot_done_makecache=false;
+    function boot_done() {
+        if (boot_done_makecache) {
+            boot_done_makecache = false;
             makeCache();
             return false;
         }
@@ -3151,10 +3191,12 @@ else if (!b_u) {
             ua = Object(ua);
             ua.details = Object.create(browserdetails(ua));
         }
-        catch (e) {}
+        catch (e) {
+        }
 
         mBroadcaster.sendMessage('boot_done');
-
+        // startMega();
+        // TODO 判断是否登录，加载对应页面
         if (u_checked) {
             startMega();
         }
@@ -3162,13 +3204,12 @@ else if (!b_u) {
             u_logout(true);
             boot_auth(null, false);
         }
-        else if (loginresponse)
-        {
+        else if (loginresponse) {
             api_setsid(u_sid);
-            u_checklogin3a(loginresponse[0],{checkloginresult:boot_auth});
+            u_checklogin3a(loginresponse[0], {checkloginresult: boot_auth});
             loginresponse = undefined;
         }
-        else u_checklogin({checkloginresult:boot_auth},false);
+        else u_checklogin({checkloginresult: boot_auth}, false);
     }
 }
 
@@ -3210,10 +3251,8 @@ function toArray() {
     return res;
 }
 
-function tryCatch(fn, onerror)
-{
-    fn.foo = function __tryCatchWrapper()
-    {
+function tryCatch(fn, onerror) {
+    fn.foo = function __tryCatchWrapper() {
         try {
             return fn.apply(this, arguments);
         } catch (e) {
@@ -3244,18 +3283,18 @@ if (!window.setImmediate && window.requestIdleCallback) {
     };
 }
 
-var onIdle = function(handler) {
-        var startTime = Date.now();
+var onIdle = function (handler) {
+    var startTime = Date.now();
 
-        return setTimeout(function() {
-            handler({
-                didTimeout: false,
-                timeRemaining: function() {
-                    return Math.max(0, 50.0 - (Date.now() - startTime));
-                }
-            });
-        }, 1);
-    };
+    return setTimeout(function () {
+        handler({
+            didTimeout: false,
+            timeRemaining: function () {
+                return Math.max(0, 50.0 - (Date.now() - startTime));
+            }
+        });
+    }, 1);
+};
 
 if (window.requestIdleCallback) {
     onIdle = function onIdle(callback) {
