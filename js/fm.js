@@ -602,6 +602,7 @@ function fmtopUI() {
     $('.fm-right-header').removeClass('requests-panel');
     $('.fm-breadcrumbs-block').removeClass('hidden');
     $('.button.link-button.accept-all').addClass('hidden');
+    $('.fm-file-upload').removeClass('hidden');
 
     if (M.currentrootid === M.RubbishID) {
         $('.fm-clearbin-button').removeClass('hidden');
@@ -2759,7 +2760,6 @@ function bottomPageDialog(close, pp, hh) {
 
     // Show Agree/Cancel buttons for Terms dialogs
     if (pp === 'terms' || pp === 'sdkterms') {
-        $('.fm-bp-cancel, .fm-bp-agree', $dialog).removeClass('hidden');
         $('.fm-bp-close', $dialog).addClass('hidden');
         $('.fm-dialog-title', $dialog).text(l[385]);
 

@@ -1481,7 +1481,8 @@ function init_page() {
                 uldl_hold = true;
 
                 if (!is_mobile) {
-                    bottomPageDialog(false, 'terms'); // show terms dialog
+                    // TODO 同意协议
+                    bottomPageDialog(true, 'terms'); // show terms dialog
                 }
             }
         }

@@ -1080,7 +1080,7 @@ MegaData.prototype.addUpload = function(u, ignoreWarning, emptyFolders) {
         pauseTxt = l[1651];
     }
 
-    // Foreach the queue and start uploading
+    // Foreach the queue and start uploading TODO 开始上传，将任务加入队列中
     var startUpload = function(u) {
 
         for (var i = u.length; i--;) {

@@ -126,8 +126,8 @@
 
                     if (String(n.fa).indexOf(':0*') > 0 || is_image2(n)
                         || is_video(n) || MediaInfoLib.isFileSupported(n)) {
-
-                        viewmode = 1;
+                        // TODO  控制首页列表或者块状展示
+                        viewmode = 1; // 0 list view, 1 block view
                         break;
                     }
                 }
