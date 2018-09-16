@@ -1095,6 +1095,7 @@ MegaData.prototype.addUpload = function(u, ignoreWarning, emptyFolders) {
             f.id = ul_id;
 
             var gid = 'ul_' + ul_id;
+            // TODO 传输页面列表行
             this.addToTransferTable(gid, ttl,
                 '<tr id="' + gid + '" class="transfer-queued transfer-upload ' + pause + '">'
                 + '<td><div class="transfer-type upload">'
