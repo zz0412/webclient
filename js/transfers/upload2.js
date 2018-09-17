@@ -1516,7 +1516,7 @@ function isQueueActive(q) {
     return typeof q.id !== 'undefined';
 }
 
-// TODO 上传队列任务分发
+// TODO 上传队列任务分发（处理逻辑分发源头）
 var ulQueue = new TransferQueue(function _workerUploader(task, done) {
     if (d && d > 1) {
         ulQueue.logger.info('worker_uploader', task, done);
