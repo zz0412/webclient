@@ -915,7 +915,7 @@ var ulmanager = {
 
     /**
      * Initialize upload on fingerprint creation.
-     *
+     *  // TODO 初始化上传并创建指纹
      * @param {Object}  aFileUpload  FileUpload instance
      * @param {Object}  aFile        File API interface instance
      * @param {Boolean} [aForce]     Ignore locking queue.
@@ -1516,6 +1516,7 @@ function isQueueActive(q) {
     return typeof q.id !== 'undefined';
 }
 
+// TODO 上传队列任务分发
 var ulQueue = new TransferQueue(function _workerUploader(task, done) {
     if (d && d > 1) {
         ulQueue.logger.info('worker_uploader', task, done);

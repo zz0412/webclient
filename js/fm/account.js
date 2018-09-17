@@ -388,8 +388,7 @@ function accountUI() {
                 me.find('.dialog-feature-switch').animate({ marginLeft: '2px' }, 150, 'swing', function () {
                     me.removeClass('toggle-on');
                     $('.qr-settings .qr-settings-acc').addClass('hidden');
-                    api_req({
-                        a: 'cld',
+                    api_req({a: 'cld',
                         cl: account.contactLink.substring(2, account.contactLink.length)
                     }, {
                         myAccount: account,

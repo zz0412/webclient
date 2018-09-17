@@ -751,11 +751,7 @@ var crypt = (function() {
     ns._showKeySignatureFailureException = function(userHandle, keyType) {
 
         // Log occurrence of this dialog.
-        api_req({
-            a: 'log',
-            e: 99607,
-            m: 'Signature/MITM warning dialog shown to user for key ' + keyType + ' for user ' + userHandle
-        });
+        api_req({a: 'log', e: 99607, m: 'Signature/MITM warning dialog shown to user for key ' + keyType + ' for user ' + userHandle});
 
         // Show warning dialog if it hasn't been locally overriden (as need by poor user Fiup who added 600
         // contacts during the 3 week broken period and none of them are signing back in to heal their stuff).

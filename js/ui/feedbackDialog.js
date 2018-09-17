@@ -68,12 +68,7 @@
                         var dump = JSON.stringify(self._report);
 
                         var reportId = MurmurHash3(JSON.stringify(dump), 0x4ef5391a);
-                        api_req({
-                            a: 'clog',
-                            t: "feedbackDialog." + self._type,
-                            id: reportId,
-                            d: dump
-                        });
+                        api_req({a: 'clog', t: "feedbackDialog." + self._type, id: reportId, d: dump});
 
                         $('.feedback-dialog-body').addClass('hidden');
                         $('.feedback-result-pad').removeClass('hidden');

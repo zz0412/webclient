@@ -59,6 +59,7 @@ if (typeof loadingDialog === 'undefined') {
     };
     loadingDialog.quiet = false;
 }
+// TODO 加载欢迎页面
 if (typeof loadingInitDialog === 'undefined') {
     var loadingInitDialog = Object.create(null);
     loadingInitDialog.progress = false;

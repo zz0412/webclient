@@ -1113,7 +1113,7 @@ MegaData.prototype.addUpload = function(u, ignoreWarning, emptyFolders) {
                 + '<a class="clear-transfer-icon"></a></td>'
                 + '<td><span class="row-number"></span></td>'
                 + '</tr>');
-
+            // TODO 将上传任务加入队列中
             ul_queue.push(f);
             ttl.left--;
             added++;

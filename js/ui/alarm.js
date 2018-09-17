@@ -411,11 +411,7 @@ var alarm = {
                 }
 
                 // Send the feedback
-                api_req({
-                    a: 'clog',
-                    t: 'doNotWantToRenewPlanFeedback',
-                    d: jsonData
-                });
+                api_req({a: 'clog', t: 'doNotWantToRenewPlanFeedback', d: jsonData});
 
                 // Set a flag so the icon and dialog never re-appears
                 alarm.hidden = 2;
