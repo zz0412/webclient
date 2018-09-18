@@ -1378,6 +1378,7 @@ FileUpload.prototype.destroy = function() {
     oDestroy(this);
 };
 
+// TODO 分发源头调用此方法
 FileUpload.prototype.run = function(done) {
     var file = this.file;
     var self = this;

@@ -451,7 +451,7 @@
         }
     }
 
-    // initialize
+    // initialize TODO 添加按钮监听
     scope.InitFileDrag = function() {
         var i = 5;
         while (i--) {
