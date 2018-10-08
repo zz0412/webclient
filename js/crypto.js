@@ -555,7 +555,6 @@ function chunkedfetch(xhr, uri, postdata, httpMethod) {
 }
 
 // send pending API request on channel q
-// TODO 请求存储地址
 function api_proc(q) {
     "use strict";
 

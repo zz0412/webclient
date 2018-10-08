@@ -505,6 +505,7 @@ var ulmanager = {
         api_req(req, ctx);
     },
 
+    // TODO 获取上传地址，并调用 ulmanager.ulUpload(File); 上传
     ulGetPostURL: function UM_ul_get_posturl(File) {
         return function(res, ctx) {
 
@@ -551,13 +552,17 @@ var ulmanager = {
         };
     },
 
+    // TODO 文件上传-13 -上传开始 UM_ul_start
     ulStart: function UM_ul_start(File) {
         if (!File.file) {
             return false;
         }
+        // posturl 是上传地址，如果存在则直接上传
         if (File.file.posturl) {
             return ulmanager.ulUpload(File);
         }
+        // 获取存储地址并上传
+        // ulmanager.ulGetPostURL(File); 在成功获取上传地址后会自动调用 ulmanager.ulUpload(File); 进行上传
         var maxpf = 128 * 1048576;
         var next = ulmanager.ulGetPostURL(File);
         var total = 0;
@@ -600,7 +605,7 @@ var ulmanager = {
         }
     },
 
-    // TODO 开始上传逻辑？？？
+    // TODO 文件上传-14 -文件上传 UM_ul_upload  上传文件任务切分
     ulUpload: function UM_ul_upload(File) {
         var i;
         var file = File.file;
@@ -654,7 +659,6 @@ var ulmanager = {
                 ulBlockExtraSize = 16 * 1048576;
             }
             else {
-                // TODO 上传文件任务切分，
                 for (i = 1; i <= 8 && p < file.size - i * ulmanager.ulBlockSize; i++) {
                     tasks[p] = new ChunkUpload(file, p, i * ulmanager.ulBlockSize);
                     pp = p;
@@ -667,12 +671,13 @@ var ulmanager = {
                 pp = p;
                 p += ulBlockExtraSize;
             }
-
+            // 处理末尾的数据
             if (file.size - pp > 0) {
                 tasks[pp] = new ChunkUpload(file, pp, file.size - pp);
             }
 
             // if (d) ulmanager.logger.info('ulTasks', tasks);
+            // 反转 tasks 任务按照文件坐标位置升序排列
             Object.keys(tasks).reverse().forEach(function(k) {
                 file.ul_offsets.push({
                     byteOffset: parseInt(k),
@@ -917,7 +922,7 @@ var ulmanager = {
 
     /**
      * Initialize upload on fingerprint creation.
-     *  // TODO 初始化上传并创建指纹
+     * TODO 文件上传-12 -初始化上传  ulSetup
      * @param {Object}  aFileUpload  FileUpload instance
      * @param {Object}  aFile        File API interface instance
      * @param {Boolean} [aForce]     Ignore locking queue.
@@ -956,6 +961,7 @@ var ulmanager = {
             var identical = ulmanager.ulIdentical(aFile);
             ulmanager.logger.info(aFile.name, "fingerprint", aFile.hash, M.h[aFile.hash], identical);
 
+            // 重复的上传
             if (M.h[aFile.hash] || identical) {
                 ulmanager.ulDeDuplicate(aFileUpload, identical, hashNode);
             }
@@ -1007,8 +1013,8 @@ UploadQueue.prototype.push = function() {
 function ChunkUpload(file, start, end, altport) {
     this.file = file;
     this.ul = file;
-    this.start = start;
-    this.end = end;
+    this.start = start; // 起始位置
+    this.end = end;  // 上传数量
     this.gid = file.owner.gid;
     this.xid = this.gid + '_' + start + '-' + end;
     this.jid = (Math.random() * Date.now()).toString(36);
@@ -1418,6 +1424,7 @@ FileUpload.prototype.run = function(done) {
     ulmanager.ulSize += file.size;
     // ulmanager.ulStartingPhase = true;
 
+    // 定义执行上传时的函数
     var started = false;
     file.done_starting = function() {
         if (started) {
@@ -1477,8 +1484,8 @@ FileUpload.prototype.run = function(done) {
 
             throw new Error('!ZeroByte');
         }
-        // TODO 文件上传-10 -文件指纹校验 并定义回调方法
-        fingerprint(file, function(hash, ts) {
+        // TODO 文件上传-10 -文件 crc32 校验 并定义回调 _ulManager(hash, ts) 方法
+        fingerprint(file, function _ulManager(hash, ts) {
             if (!(file && self.file)) {
                 if (d) {
                     ulmanager.logger.info('fingerprint', hash, 'UPLOAD CANCELED');
@@ -1490,7 +1497,8 @@ FileUpload.prototype.run = function(done) {
             }
             file.hash = hash;
             file.ts = ts;
-            // ？？？？
+            // ulmanager = upload manager
+            // 调用上传管理的 ulSetup 方法
             ulmanager.ulSetup(self, file);
         });
     }

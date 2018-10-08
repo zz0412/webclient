@@ -369,7 +369,7 @@ function setupTransferAnalysis() {
         function Finish(crc) {
             onTimeout(1);
             var modtime = (uq_entry.lastModifiedDate || 0) / 1000;
-            // TODO 文件上传-11 -指纹校验 ulmanager.ulSetup(self, file);
+            // TODO 文件上传-11 - crc32 校验结束 回调 _ulManager(hash, ts)
             callback(base64urlencode(crc + serialize(modtime)), modtime);
             callback = null;
         }
