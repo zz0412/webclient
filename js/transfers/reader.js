@@ -66,6 +66,7 @@ Object.defineProperty(FileUploadReader.prototype, 'constructor', {
 });
 
 /**
+ * 从磁盘获取加密块
  * Get an encrypted chunk from disk
  * @param {Number} offset The byte offset
  * @param {Function} callback
@@ -202,7 +203,7 @@ FileUploadReader.prototype._encrypt = function(chunk, data) {
     });
 };
 
-// @private
+// @private TODO 获取文件块的buffer并加密
 FileUploadReader.prototype._getArrayBuffer = function(offset, length) {
     'use strict';
 

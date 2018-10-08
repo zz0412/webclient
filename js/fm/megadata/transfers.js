@@ -1080,7 +1080,8 @@ MegaData.prototype.addUpload = function(u, ignoreWarning, emptyFolders) {
         pauseTxt = l[1651];
     }
 
-    // Foreach the queue and start uploading TODO 开始上传，将任务加入队列中
+    // Foreach the queue and start uploading1
+    // TODO 文件上传
     var startUpload = function(u) {
 
         for (var i = u.length; i--;) {
@@ -1113,7 +1114,7 @@ MegaData.prototype.addUpload = function(u, ignoreWarning, emptyFolders) {
                 + '<a class="clear-transfer-icon"></a></td>'
                 + '<td><span class="row-number"></span></td>'
                 + '</tr>');
-            // TODO 将上传任务加入队列中
+            // TODO 文件上传-1 -将上传任务加入队列中 UploadQueue
             ul_queue.push(f);
             ttl.left--;
             added++;

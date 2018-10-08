@@ -600,6 +600,7 @@ var ulmanager = {
         }
     },
 
+    // TODO 开始上传逻辑？？？
     ulUpload: function UM_ul_upload(File) {
         var i;
         var file = File.file;
@@ -637,7 +638,7 @@ var ulmanager = {
             var p = 0;
             var tasks = Object.create(null);
             var ulBlockExtraSize = ulmanager.ulBlockExtraSize;
-            //var boost = !mega.chrome || parseInt(ua.details.version) < 68;
+            // var boost = !mega.chrome || parseInt(ua.details.version) < 68;
 			var boost = false;
 
             if (file.size > 0x1880000 && boost) {
@@ -653,6 +654,7 @@ var ulmanager = {
                 ulBlockExtraSize = 16 * 1048576;
             }
             else {
+                // TODO 上传文件任务切分，
                 for (i = 1; i <= 8 && p < file.size - i * ulmanager.ulBlockSize; i++) {
                     tasks[p] = new ChunkUpload(file, p, i * ulmanager.ulBlockSize);
                     pp = p;
@@ -990,6 +992,7 @@ var ulmanager = {
 function UploadQueue() {}
 inherits(UploadQueue, Array);
 
+// TODO 文件上传-2 -将上传任务加入队列中 UploadQueue -> TransferQueue
 UploadQueue.prototype.push = function() {
     var pos = Array.prototype.push.apply(this, arguments) - 1;
     var file = this[pos];
@@ -1216,6 +1219,7 @@ ChunkUpload.prototype.onXHRready = function(xhrEvent) {
     response = undefined;
 }
 
+// TODO 正式上传？？？？
 ChunkUpload.prototype.upload = function() {
     var url, xhr;
 
@@ -1258,6 +1262,7 @@ ChunkUpload.prototype.upload = function() {
     this.xhr = xhr;
 };
 
+// TODO  io 读取
 ChunkUpload.prototype.io_ready = function(res) {
     'use strict';
 
@@ -1300,6 +1305,7 @@ ChunkUpload.prototype.done = function(ee) {
     }
 };
 
+//  TODO 上传,读取IO？？？？
 ChunkUpload.prototype.run = function(done) {
     this._done = done;
     if (this.bytes && this.suffix) {
@@ -1378,7 +1384,9 @@ FileUpload.prototype.destroy = function() {
     oDestroy(this);
 };
 
-// TODO 分发源头调用此方法
+/**
+ *   done: MQRicStub()
+ */
 FileUpload.prototype.run = function(done) {
     var file = this.file;
     var self = this;
@@ -1469,7 +1477,7 @@ FileUpload.prototype.run = function(done) {
 
             throw new Error('!ZeroByte');
         }
-
+        // TODO 文件上传-10 -文件指纹校验 并定义回调方法
         fingerprint(file, function(hash, ts) {
             if (!(file && self.file)) {
                 if (d) {
@@ -1482,7 +1490,7 @@ FileUpload.prototype.run = function(done) {
             }
             file.hash = hash;
             file.ts = ts;
-
+            // ？？？？
             ulmanager.ulSetup(self, file);
         });
     }
@@ -1517,14 +1525,22 @@ function isQueueActive(q) {
     return typeof q.id !== 'undefined';
 }
 
-// TODO 上传队列任务分发（处理逻辑分发源头）
-var ulQueue = new TransferQueue(function _workerUploader(task, done) {
+// TODO 上传队列 TransferQueue
+var ulQueue = new TransferQueue(
+    /**
+     * TODO 文件上传-9 -TransferQueue  调用 FileUpload.prototype.run 方法
+     * task：FileUpload
+     * done：MQRicStub()
+     */
+    function _workerUploader(task, done) {
     if (d && d > 1) {
         ulQueue.logger.info('worker_uploader', task, done);
     }
+    // 调用 FileUpload.prototype.run 方法
     task.run(done);
 }, 4, 'uploader');
 
+// TODO 文件上传-3 -TransferQueue 调用 TransferQueue.prototype.push 方法执行
 ulQueue.poke = function(file, meth) {
     if (file.owner) {
         var gid = ulmanager.getGID(file);
@@ -1564,6 +1580,7 @@ ulQueue.poke = function(file, meth) {
         file.sent = 0;
         file.progress = Object.create(null);
         file.owner = new FileUpload(file);
+        //  调用 TransferQueue.prototype.push 方法执行
         ulQueue[meth || 'push'](file.owner);
     }
 };

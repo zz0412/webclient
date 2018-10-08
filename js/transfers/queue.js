@@ -225,9 +225,11 @@ MegaQueue.prototype.pushAll = function(tasks, next, error) {
     }
 };
 
+// TODO 文件上传-8 -TransferQueue  调用  _workerUploader(task, done) 方法
 MegaQueue.prototype.run_in_context = function(task) {
     this._running++;
     this._pending.push(task[0]);
+    // 调用  function _workerUploader(task, done)
     this._worker(task[0], function MQRicStub() {
         console.assert(task[0], 'This should not be reached twice.');
         if (!task[0]) {
@@ -281,6 +283,7 @@ MegaQueue.prototype.getNextTask = function(sp) {
     return null;
 };
 
+// TODO 文件上传-7 - TransferQueue 执行 run_in_context 方法
 MegaQueue.prototype.process = function(sp) {
     var args;
     if (this._paused) {
@@ -378,6 +381,7 @@ MegaQueue.prototype.destroy = function() {
     }
 };
 
+// TODO 文件上传-6 -TransferQueue 设置定时执行，调用process方法
 MegaQueue.prototype._process = function(ms, sp) {
     if (this._later) {
         clearTimeout(this._later);
@@ -386,17 +390,20 @@ MegaQueue.prototype._process = function(ms, sp) {
         sp = new Error(this.qname + ' stack pointer');
     }
     var queue = this;
-
+    // 延后触发
     this._later = setTimeout(function() {
         queue.process(sp);
         queue = undefined;
     }, ms || 10);
 };
 
+// TODO 文件上传-5 - TransferQueue 调用 MegaQueue.prototype._process
 MegaQueue.prototype.push = function(arg, next, self) {
+    // this == TransferQueue
     this._queue.push([arg, next, self]);
-    // this.logger.debug('Queueing new task, total: %d', this._queue.length, arg);
+    this.logger.debug('Queueing new task, total: %d', this._queue.length, arg);
     this.trigger('queue');
+    // 调用 MegaQueue.prototype._process
     this._process();
 };
 
@@ -534,9 +541,12 @@ TransferQueue.prototype.resume = function(gid) {
     }
 };
 
+// TODO 文件上传-4 -TransferQueue 调用  MegaQueue.prototype.push 方法执行
 TransferQueue.prototype.push = function(cl) {
 
+    // 上传时 cl 的类型为 FileUpload
     if (!(cl instanceof ClassFile)) {
+        // 调用  MegaQueue.prototype.push 方法执行
         return MegaQueue.prototype.push.apply(this, arguments);
     }
 

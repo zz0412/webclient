@@ -1072,7 +1072,7 @@ function waitsc() {
 
     waittimeout = setTimeout(waitsc, MAX_WAIT);
 
-    waitxhr.onloadend = function(ev) {
+  /*  waitxhr.onloadend = function(ev) {
         if (this.waitid === waitid) {
             if (this.status !== 200) {
                 if (d) {
@@ -1117,7 +1117,7 @@ function waitsc() {
                 }
             }
         }
-    };
+    };*/
 
     waitbegin = Date.now();
     waitxhr.open('POST', waiturl, true);
