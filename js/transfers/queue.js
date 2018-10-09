@@ -225,12 +225,15 @@ MegaQueue.prototype.pushAll = function(tasks, next, error) {
     }
 };
 
-// TODO 文件上传-8 -TransferQueue  调用  _workerUploader(task, done) 方法
+// TODO 文件上传-8.1 -TransferQueue  调用  _workerUploader(task, done) 方法
+// TODO 文件上传-18 -TransferQueue  调用  _workerUploader(task, done) 方法
 MegaQueue.prototype.run_in_context = function(task) {
     this._running++;
     this._pending.push(task[0]);
-    // 调用  function _workerUploader(task, done)
-    this._worker(task[0], function MQRicStub() {
+    // this._worker() 调用  function _workerUploader(task, done) 方法
+    this._worker(task[0],
+        // TODO 文件上传-15.4 -执行预定义 MQRicStub() 函数
+        function MQRicStub() {
         console.assert(task[0], 'This should not be reached twice.');
         if (!task[0]) {
             return;
@@ -254,6 +257,7 @@ MegaQueue.prototype.run_in_context = function(task) {
                     done.apply(task[2] || this, [task[0], args]);
                 }
                 if (!this.isEmpty() || $.len(this._qpaused)) {
+                    // TODO 文件上传-16.1 -设置定时触发
                     this._process();
                 }
             }
@@ -283,7 +287,8 @@ MegaQueue.prototype.getNextTask = function(sp) {
     return null;
 };
 
-// TODO 文件上传-7 - TransferQueue 执行 run_in_context 方法
+// TODO 文件上传-7  - TransferQueue 执行 run_in_context 方法
+// TODO 文件上传-17 - TransferQueue 执行 run_in_context 方法
 MegaQueue.prototype.process = function(sp) {
     var args;
     if (this._paused) {
@@ -381,7 +386,8 @@ MegaQueue.prototype.destroy = function() {
     }
 };
 
-// TODO 文件上传-6 -TransferQueue 设置定时执行，调用process方法
+// TODO 文件上传-6 -TransferQueue 设置定时触发，调用process方法
+// TODO 文件上传-16.2 -设置定时触发
 MegaQueue.prototype._process = function(ms, sp) {
     if (this._later) {
         clearTimeout(this._later);

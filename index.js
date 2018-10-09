@@ -1481,8 +1481,21 @@ function init_page() {
                 uldl_hold = true;
 
                 if (!is_mobile) {
-                    // TODO 同意协议
+                    // TODO 同意协议，不同意协议会无法上传
                     bottomPageDialog(true, 'terms'); // show terms dialog
+                    // 自动同意协议导致会导致队列一直暂停中
+                    // 模拟同意协议点击后发生的事情
+                    u_attr.terms = 1;
+                    api_req({ a: 'up', terms: 'Mq' });
+                    // queued work is continued when user accept terms of service
+                    $('.transfer-pause-icon').removeClass('active');
+                    $('.nw-fm-left-icon.transfers').removeClass('paused');
+                    dlQueue.resume();
+                    ulQueue.resume();
+                    uldl_hold = false;
+                    if (ul_queue.length > 0) {
+                        M.showTransferToast('u', ul_queue.length);
+                    }
                 }
             }
         }

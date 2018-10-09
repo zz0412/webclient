@@ -721,6 +721,7 @@ var ulmanager = {
 
         M.ulstart(file);
         if (file.done_starting) {
+            // TODO 文件上传-15.1 -执行预定义上传 done_starting() 函数
             file.done_starting();
         }
     },
@@ -1311,7 +1312,7 @@ ChunkUpload.prototype.done = function(ee) {
     }
 };
 
-//  TODO 上传,读取IO？？？？
+// TODO 文件上传-20.1 - 上传，准备读取IO
 ChunkUpload.prototype.run = function(done) {
     this._done = done;
     if (this.bytes && this.suffix) {
@@ -1391,6 +1392,7 @@ FileUpload.prototype.destroy = function() {
 };
 
 /**
+ *  TODO 文件上传-9.2 TransferQueue  调用 FileUpload.prototype.run 方法
  *   done: MQRicStub()
  */
 FileUpload.prototype.run = function(done) {
@@ -1424,8 +1426,9 @@ FileUpload.prototype.run = function(done) {
     ulmanager.ulSize += file.size;
     // ulmanager.ulStartingPhase = true;
 
-    // 定义执行上传时的函数
     var started = false;
+    // 定义执行上传时的函数
+    // TODO 文件上传-15.2 -执行预定义上传 done_starting() 函数
     file.done_starting = function() {
         if (started) {
             return;
@@ -1450,6 +1453,7 @@ FileUpload.prototype.run = function(done) {
         }
 
         file = self = undefined;
+        // TODO 文件上传-15.3 -执行预定义 MQRicStub() 函数
         done();
     };
 
@@ -1536,7 +1540,8 @@ function isQueueActive(q) {
 // TODO 上传队列 TransferQueue
 var ulQueue = new TransferQueue(
     /**
-     * TODO 文件上传-9 -TransferQueue  调用 FileUpload.prototype.run 方法
+     * TODO 文件上传-9.1 TransferQueue  调用 FileUpload.prototype.run 方法
+     * TODO 文件上传-19 -TransferQueue  调用 ChunkUpload.prototype.run 方法
      * task：FileUpload
      * done：MQRicStub()
      */
@@ -1544,7 +1549,15 @@ var ulQueue = new TransferQueue(
     if (d && d > 1) {
         ulQueue.logger.info('worker_uploader', task, done);
     }
-    // 调用 FileUpload.prototype.run 方法
+    if (task instanceof FileUpload) {
+        console.log("  task === 'FileUpload");
+    } else if (task instanceof ChunkUpload) {
+        console.log("  task === 'ChunkUpload");
+    }else {
+        console.log("  task ===" + task);
+    }
+    // 1.调用 FileUpload.prototype.run 方法
+    // 2.调用 ChunkUpload.prototype.run 方法
     task.run(done);
 }, 4, 'uploader');
 
