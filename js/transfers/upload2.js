@@ -1549,13 +1549,7 @@ var ulQueue = new TransferQueue(
     if (d && d > 1) {
         ulQueue.logger.info('worker_uploader', task, done);
     }
-    if (task instanceof FileUpload) {
-        console.log("  task === 'FileUpload");
-    } else if (task instanceof ChunkUpload) {
-        console.log("  task === 'ChunkUpload");
-    }else {
-        console.log("  task ===" + task);
-    }
+    console.log("  task ===" + task);
     // 1.调用 FileUpload.prototype.run 方法
     // 2.调用 ChunkUpload.prototype.run 方法
     task.run(done);
@@ -1639,6 +1633,7 @@ Object.defineProperty(ulQueue, 'maxActiveTransfers', {
         }
 });
 
+// TODO ？？？？？？？？？？？？ CreateWorkers('encrypter.js', function(context, e, done) {
 mBroadcaster.once('startMega', function _setupEncrypter() {
     'use strict';
     var encrypter = CreateWorkers('encrypter.js', function(context, e, done) {

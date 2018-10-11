@@ -97,6 +97,7 @@ function CreateWorkers(url, message, size) {
         window._cwInstances[wid] = instances;
     }
 
+    // TODO 创建worker
     return new MegaQueue(function _(task, done) {
         var i = size;
 

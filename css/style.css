@@ -5173,7 +5173,7 @@ filter: progid:DXImageTransform.Microsoft.Alpha(opacity=30);
     transition: all 200ms ease-in-out;
 }
 .transfers.nw-fm-left-icon {
-    position: absolute;
+    /*position: absolute;*/
     bottom: 0;
 }
 .transfers.nw-fm-left-icon.active {

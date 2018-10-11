@@ -198,6 +198,7 @@ FileUploadReader.prototype._encrypt = function(chunk, data) {
             ctx.appendMode = true;
         }
         else {
+            // TODO .????????????????????????
             Encrypter.push([ctx, nonce, chunk.byteOffset / 16, data], ack);
         }
     });
